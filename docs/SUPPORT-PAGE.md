@@ -1,10 +1,8 @@
 # Proposta de página de suporte HydroVision
 
 Rascunho para incorporar ao site Hydroforce existente. Ainda não publicado.
-Confirmar o canal de atendimento antes de publicar: `contato@hydroforce.com.br`
-é o contato público já informado na política e nos termos, mas seu uso para suporte
-deste plugin ainda não foi confirmado. Não preencher `supportURL` até abrir e
-conferir a página real em HTTPS.
+Canal de atendimento confirmado pelo mantenedor: `contato@hydroforce.com.br`.
+Não preencher `supportURL` até abrir e conferir a página real em HTTPS.
 
 Caminho sugerido, a criar no site: `/pt-BR/hydrovision/suporte`.
 Este caminho é uma proposta, não um endereço verificado.
@@ -17,7 +15,7 @@ Precisa de ajuda para conectar sua conta HydroVision, consultar dados ou gerar
 um relatório pelo ChatGPT? Entre em contato com a equipe Hydroforce pelo canal
 indicado nesta página.
 
-**Canal de atendimento:** confirmar o email que será exibido aqui.
+**E-mail de suporte:** [contato@hydroforce.com.br](mailto:contato@hydroforce.com.br).
 
 Ao relatar um problema, informe:
 
@@ -45,8 +43,8 @@ anexos e a exibição de imagens dependem dos recursos disponíveis no cliente C
 
 ## Conferência antes da publicação
 
-Confirmar o email real e substituir a indicação de canal acima; incorporar o conteúdo
-ao layout do site, remover estas notas de autoria e publicar sem exigir login.
+Incorporar o conteúdo ao layout do site, remover estas notas de autoria e publicar
+sem exigir login. O email de atendimento já está confirmado pelo mantenedor.
 Testar o link/botão de contato, conferir as páginas de privacidade/termos e registrar a
 URL final no manifesto do plugin. Informar horário ou prazo de atendimento somente
 se a Hydroforce definir esse compromisso. Não foi enviado email nem criado chamado.

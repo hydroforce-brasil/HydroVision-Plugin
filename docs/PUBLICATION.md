@@ -68,9 +68,9 @@ como desconectar/revogar acesso e as práticas reais de logs, retenção e exclu
 Não declarar essas práticas sem confirmá-las com a implementação e a equipe responsável.
 A página de apresentação também deve explicar o uso do HydroVision no ChatGPT.
 
-O endereço `contato@hydroforce.com.br` aparece nos documentos como contato público.
-Ainda é necessário confirmar se receberá suporte do plugin. Uma página simples no
-site existente pode conter esse canal, orientações para login/conexão, informações
+O mantenedor confirmou `contato@hydroforce.com.br` como email de suporte do plugin.
+O endereço também aparece nos documentos como contato público. Uma página simples
+no site existente pode conter esse canal, orientações para login/conexão, informações
 necessárias para relatar falhas e links dos documentos. Não precisa de um sistema de
 chamados separado. A proposta está em [SUPPORT-PAGE.md](SUPPORT-PAGE.md), ainda sem
 publicação nem `supportURL` no manifesto. Não foram prometidos horários ou prazos.
