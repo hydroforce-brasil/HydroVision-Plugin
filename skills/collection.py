@@ -209,7 +209,11 @@ def validate_sources():
         if re.search(r"[A-Za-zÀ-ÿ]\?+[A-Za-zÀ-ÿ]", body):
             raise ValueError(f"Damaged text encoding in {spec['name']}")
         header = frontmatter(ROOT / spec["name"] / "SKILL.md")
-        if header.get("name", "").strip() != spec["name"] or len(header.get("description", "").strip()) > 200:
+        # Portable skills require a nonblank description. The former local
+        # 200-character cutoff rejected our existing analysis skill.
+        if (header.get("name", "").strip() != spec["name"]
+                or not header.get("description", "").strip()
+                or len(body.encode("utf-8")) > 1024 * 1024):
             raise ValueError(f"Invalid skill metadata: {spec['name']}")
         for reference in spec["references"]:
             if not (SHARED / reference).is_file():
@@ -246,6 +250,16 @@ def validate_client_configuration(folder: Path, client: str, config=None):
     else:
         if plugin.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json":
             raise ValueError("ChatGPT needs the portable plugin schema.")
+        interface = plugin["extensions"]["com.openai"]["interface"]
+        for field in ("displayName", "shortDescription"):
+            value = interface.get(field)
+            if not isinstance(value, str) or not value.strip() or len(value) > 30:
+                raise ValueError(f"ChatGPT {field} must contain 1–30 characters.")
+        compatibility = folder / ".codex-plugin/plugin.json"
+        if compatibility.is_file():
+            legacy = read_json(compatibility)
+            if any(legacy.get(key) != plugin.get(key) for key in ("name", "version", "description", "author")) or legacy.get("interface") != interface:
+                raise ValueError("ChatGPT compatibility manifest is out of sync.")
         mcp = read_json(folder / settings["mcp_config"])
         if mcp.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json" or server["type"] != "streamable-http":
             raise ValueError("ChatGPT needs portable MCP Streamable HTTP configuration.")

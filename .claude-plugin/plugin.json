@@ -1,6 +1,6 @@
 {
   "name": "hydrovision",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Consultas e análises HydroVision com conceitos mapeados, diagnóstico, visualizações e documentos institucionais com imagens incorporadas.",
   "author": {"name": "Hydroforce"},
   "repository": "https://github.com/hydroforce-brasil/HydroVision-Plugin",

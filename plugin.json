@@ -1,22 +1,91 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hydrovision",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Consultas HydroVision, diagnóstico, visualizações e documentos institucionais com imagens integradas.",
-  "author": {"name": "Hydroforce"},
+  "author": {
+    "name": "Hydroforce"
+  },
   "repository": "https://github.com/hydroforce-brasil/HydroVision-Plugin",
-  "keywords": ["hydrovision", "water", "leaks", "reports"],
+  "keywords": [
+    "hydrovision",
+    "water",
+    "leaks",
+    "reports"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "HydroVision",
-        "shortDescription": "Análises e relatórios de operação e vazamentos",
-        "longDescription": "Consulta o MCP HydroVision com contexto, conceitos mapeados e modelos institucionais para documentos com evidências visuais incorporadas.",
+        "shortDescription": "Análises de água e vazamentos",
+        "longDescription": "Consulte os dados autorizados do HydroVision, analise vazamentos e a saúde de loggers, compare períodos e produza gráficos e relatórios com modelos institucionais. Requer uma conta HydroVision autorizada. A conexão MCP é somente leitura; a criação de arquivos depende dos recursos disponíveis no cliente.",
         "developerName": "Hydroforce",
-        "category": "Productivity",
-        "capabilities": ["Read"],
+        "category": "Data & Analytics",
+        "capabilities": [
+          "Read"
+        ],
         "brandColor": "#00539C",
-        "defaultPrompt": ["Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."]
+        "defaultPrompt": [
+          "Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."
+        ]
+      },
+      "review": {
+        "prompts": [
+          "Quais empresas posso consultar no HydroVision?",
+          "Compare os vazamentos confirmados da empresa selecionada em agosto e setembro de 2026.",
+          "Gere os CSVs mensais de vazamentos da empresa selecionada para setembro de 2026."
+        ],
+        "test_cases": {
+          "positive": [
+            {
+              "description": "P1 — Descoberta de acesso. Usar conta de demonstração autorizada com empresa selecionada. Percorrer todas as páginas antes de afirmar uma lista completa; valores esperados vêm da conta de teste.",
+              "prompt": "Quais empresas posso consultar no HydroVision e qual está selecionada?",
+              "tools_triggered": "get_context",
+              "expected_behavior": "Chamar get_context e seguir page.next_cursor quando has_more=true. Mostrar apenas as empresas retornadas, identificar selected_company_id e avisar se a lista estiver parcial. Não consultar dados operacionais de todas as empresas."
+            },
+            {
+              "description": "P2 — Comparação temporal. Na empresa de demonstração selecionada, preparar registros de confirmação em agosto e setembro de 2026. O teste usa somente essa empresa, com a mesma política de arquivamento nos dois períodos.",
+              "prompt": "Compare a quantidade de vazamentos confirmados da empresa selecionada em agosto e setembro de 2026.",
+              "tools_triggered": "get_context, describe_data, compare_metrics",
+              "expected_behavior": "Ler describe_data(dataset=leaks). Chamar compare_metrics com metrics=[count], company_ids iguais à empresa selecionada, period.basis=confirmed_at; baseline de 2026-08-01 a 2026-09-01 e current de 2026-09-01 a 2026-10-01, fim exclusivo e timezone=America/Bahia. Relatar valores, diferenças e cobertura; base zero não tem variação percentual."
+            },
+            {
+              "description": "P3 — Exportação. Conta e empresa de demonstração com até 5000 registros e 256 KiB por arquivo para setembro de 2026. Validar arquivos completos recebidos, não uma prévia reconstruída.",
+              "prompt": "Gere os dois CSVs mensais de vazamentos da empresa selecionada para setembro de 2026 e mostre uma prévia.",
+              "tools_triggered": "get_context, export_monthly_leaks",
+              "expected_behavior": "Chamar export_monthly_leaks com company_id da empresa selecionada, month=9, year=2026 e report=both. Preservar conteúdo UTF-8 com BOM, separador ponto e vírgula e SHA-256 informado. Exibir prévia e anexar arquivos se o cliente permitir. Explicar que os grupos não representam todos os reparos nem estoque histórico."
+            },
+            {
+              "description": "P4 — Diagnóstico com fotos. Preparar um único logger chamado Demo-01 na empresa de demonstração, com foto de instalação e dados de saúde. Ainda é necessário criar e verificar essa fixture; não usar conta de produção para revisão.",
+              "prompt": "Verifique a saúde do logger Demo-01 na empresa selecionada e mostre suas fotos de instalação.",
+              "tools_triggered": "get_context, resolve_entities, logger_health, logger_installation_images",
+              "expected_behavior": "Resolver Demo-01 com entity=loggers e company_ids da empresa selecionada; havendo ambiguidade, perguntar. Usar o ID retornado em logger_health(id) e logger_installation_images(id). Apresentar evidências e fotos com legendas; seguir next_offset quando necessário, informar falhas e não tratar ausência de dados como saúde confirmada."
+            },
+            {
+              "description": "P5 — Relatório. Conta de demonstração com vazamentos em setembro de 2026, cliente com criação e renderização de DOCX/PDF, modelo institucional empacotado. Conferir arquivo e dados antes de declarar sucesso.",
+              "prompt": "Prepare um relatório gerencial em DOCX e PDF sobre os vazamentos confirmados da empresa selecionada em setembro de 2026, com totais por setor e um gráfico.",
+              "tools_triggered": "get_context, describe_data, query_data",
+              "expected_behavior": "Usar describe_data(dataset=leaks) e query_data com dataset=leaks, mode=aggregate, metrics=[count], group_by=[sector_id], empresa selecionada e período confirmed_at de 2026-09-01 a 2026-10-01 em America/Bahia. Consultar o schema atual para a forma exata dos argumentos. Usar todas as páginas de agrupamentos necessárias; preservar escopo e cobertura. Criar DOCX/PDF com modelo institucional, gráfico incorporado e fontes; validar e inspecionar páginas. Declarar impedimento se o executor não puder produzir um formato, sem inventar anexo."
+            }
+          ],
+          "negative": [
+            {
+              "description": "N1 — Alteração fora do escopo. Não invocar ferramentas MCP para executar ou simular a escrita. Explicar que a integração é somente leitura e não afirmar que o registro foi atualizado.",
+              "prompt": "Marque o vazamento 123 como reparado agora no HydroVision."
+            },
+            {
+              "description": "N2 — Comando de dispositivo não suportado. Não invocar ferramentas para reiniciar ou reconfigurar. Explicar a limitação; diagnóstico pode ser oferecido sem alegar execução do comando.",
+              "prompt": "Reinicie remotamente o logger Demo-01 e altere o intervalo de coleta para cinco minutos."
+            },
+            {
+              "description": "N3 — Previsão fora do catálogo. Não usar ferramentas HydroVision como fonte meteorológica, nem inventar uma previsão. Explicar que o plugin não fornece esse serviço.",
+              "prompt": "Use o HydroVision para prever a chuva de amanhã em Salvador."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "Corrige o build de entrada para incluir as quatro skills, referências, scripts, modelos institucionais e MCP portátil; sincroniza metadados e adiciona rascunhos de casos de revisão. Publicação ainda depende dos materiais e verificações descritos em docs/PUBLICATION.md."
       }
     }
   }
