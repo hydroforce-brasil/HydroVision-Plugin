@@ -82,10 +82,15 @@
               "prompt": "Use o HydroVision para prever a chuva de amanhã em Salvador."
             }
           ]
-        }
+        },
+        "commerce": false,
+        "commerce_description": "O plugin HydroVision não envolve pagamentos nem compras."
       },
       "publication": {
-        "release_notes": "Corrige o build de entrada para incluir as quatro skills, referências, scripts, modelos institucionais e MCP portátil; sincroniza metadados e adiciona rascunhos de casos de revisão. Publicação ainda depende dos materiais e verificações descritos em docs/PUBLICATION.md."
+        "release_notes": "Corrige o build de entrada para incluir as quatro skills, referências, scripts, modelos institucionais e MCP portátil; sincroniza metadados e adiciona rascunhos de casos de revisão. Publicação ainda depende dos materiais e verificações descritos em docs/PUBLICATION.md.",
+        "countries": [
+          "BR"
+        ]
       }
     }
   }

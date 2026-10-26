@@ -17,8 +17,8 @@ cada uma autenticada no HydroVision com suas permissões.
 - Cinco casos positivos, três negativos e prompts escritos em
   `plugin.json → extensions.com.openai.review`; release notes em `publication`.
 
-O nome Hydroforce foi preservado dos metadados existentes. Isso não comprova que
-seja a identidade jurídica/verificada que será usada para publicação.
+O mantenedor confirmou Hydroforce como publicador. A verificação dessa identidade
+no portal ainda está pendente; a confirmação do nome não comprova verificação concluída.
 
 ## 1. Confirmar a apresentação pública
 
@@ -32,12 +32,17 @@ Proposta atual para correção pelo mantenedor:
   e da versão em inglês exigida como base pelo fluxo de publicação. Textos em português
   poderão ser fornecidos em `publication.translations`.
 
-Confirmar antes de preencher os campos restantes:
+Decisões confirmadas pelo mantenedor em 26/10/2026:
 
-1. Identidade individual ou empresarial verificada que publicará o plugin.
-2. Países atendidos: códigos específicos ou decisão explícita por todos os disponíveis.
-3. Se o plugin envolve pagamentos/compras; se houver, o que é comprado e onde.
-   Não inferir isso da existência de um sistema comercial.
+| Item | Decisão | Registro |
+|---|---|---|
+| Publicador | Hydroforce. | `author.name` e `interface.developerName`; verificação no portal pendente. |
+| Disponibilidade | Apenas Brasil. | `publication.countries = ["BR"]`. |
+| Pagamentos/compras | O plugin não envolve pagamentos nem compras. | `review.commerce = false`, com descrição. |
+
+O recorte Brasil é uma configuração de disponibilidade na publicação, não uma
+implementação de bloqueio geográfico no servidor MCP. A ausência de pagamentos no
+plugin não altera nem declara condições comerciais de outros produtos Hydroforce.
 
 Obter e verificar estas quatro páginas públicas HTTPS, preenchendo os campos em
 `extensions.com.openai.interface` somente após confirmar seu conteúdo:
