@@ -1,0 +1,30 @@
+name: Validate HydroVision plugin
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python skills/collection.py validate
+      - run: python -m unittest discover -s skills/tests -v
+      - run: python skills/collection.py build --output dist/ci
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: hydrovision-plugin
+          path: |
+            dist/ci/claude/*.zip
+            dist/ci/chatgpt/*.zip
+            dist/ci/manifest.json
+            dist/ci/claude/manifest.json
+            dist/ci/chatgpt/manifest.json
+            dist/ci/INSTALL.md
+            dist/ci/.agents/plugins/marketplace.json
+            dist/ci/docs/
+          include-hidden-files: true

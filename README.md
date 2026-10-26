@@ -3,6 +3,53 @@
 Conecte o HydroVision para consultar dados, analisar fotos e gerar relatórios no chat.
 As ferramentas são somente leitura e respeitam suas permissões no HydroVision.
 
+## Plugin e coleção de skills
+
+Este repositório gera versões Claude e ChatGPT do plugin `hydrovision`, com quatro skills:
+
+| Skill | Uso |
+|---|---|
+| `hydrovision-analysis` | Consultas, conceitos, entidades, vazamentos, investigações e comparações. |
+| `hydrovision-diagnostics` | Saúde, desempenho, bateria e qualidade/atualização da telemetria. |
+| `hydrovision-visualizations` | Gráficos, mapas possíveis, tabelas e imagens integradas ao texto. |
+| `hydrovision-reports` | DOCX, PPTX, PDF e XLSX gerenciais/técnicos com identidade institucional. |
+
+O [catálogo de objetos, visões e tools](docs/CATALOG.md) mapeia 33 conceitos,
+nove visões e as 28 tools atuais, distinguindo dados disponíveis, parciais e indisponíveis.
+As imagens principais aparecem junto aos achados; as demais ficam no apêndice visual
+incorporado ao documento ou em galeria no chat. Uma foto não é substituída por um link.
+
+A skill de relatórios incorpora um DOCX e dois PPTX institucionais (claro e escuro).
+Os cinco arquivos de origem foram inventariados; apresentações chamadas “Exemplo”
+são referências de composição e não entram nos pacotes. Não há dependência de D: no
+uso pelo Claude. XLSX deriva da identidade institucional; PDF deriva do editável composto.
+
+Para gerar os arquivos de instalação, com Python 3.10+:
+
+```powershell
+python skills/collection.py validate
+python -m unittest discover -s skills/tests -v
+python skills/collection.py build --output dist/1.1.0
+```
+
+O comando produz `dist/1.1.0/claude/hydrovision-plugin.zip` e
+`dist/1.1.0/chatgpt/hydrovision-plugin.zip`, além de quatro ZIPs individuais por cliente,
+com manifestos e SHA-256. Para gerar só uma versão, use `--target claude` ou `--target chatgpt`.
+Use um diretório de saída novo em cada build.
+Veja [como instalar](skills/INSTALL.md), [como manter e atualizar](docs/MAINTENANCE.md)
+e os [cenários de aceite nos clientes](docs/ACCEPTANCE.md). Conectar o MCP não instala
+automaticamente as skills. Cada cliente precisa de instalação e autenticação próprias.
+
+O Claude usa `.claude-plugin/plugin.json` e `.mcp.json`; ChatGPT usa os arquivos
+portáteis `plugin.json` e `mcp.json`. A base de skills é neutra, e cada build inclui
+seu guia de execução para documentos/imagens e o client ID OAuth correto. No ChatGPT,
+há um [guia de instalação e distribuição](docs/INSTALL-CHATGPT.md) e um marketplace local
+em `.agents/plugins/marketplace.json`; isso não publica o plugin nem habilita outras contas.
+
+O empacotador e os testes locais usam somente a biblioteca padrão, sem inicializar
+Django, consultar bancos ou chamar o MCP. A criação final dos documentos usa as capacidades
+disponíveis do cliente; inspeção estrutural local não certifica renderização real.
+
 ## Antes de começar
 
 Tenha uma conta ativa no HydroVision com acesso à sua organização e uma conta

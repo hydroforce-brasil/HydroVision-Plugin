@@ -1,0 +1,23 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "hydrovision",
+  "version": "1.1.0",
+  "description": "Consultas HydroVision, diagnóstico, visualizações e documentos institucionais com imagens integradas.",
+  "author": {"name": "Hydroforce"},
+  "repository": "https://github.com/hydroforce-brasil/HydroVision-Plugin",
+  "keywords": ["hydrovision", "water", "leaks", "reports"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "HydroVision",
+        "shortDescription": "Análises e relatórios de operação e vazamentos",
+        "longDescription": "Consulta o MCP HydroVision com contexto, conceitos mapeados e modelos institucionais para documentos com evidências visuais incorporadas.",
+        "developerName": "Hydroforce",
+        "category": "Productivity",
+        "capabilities": ["Read"],
+        "brandColor": "#00539C",
+        "defaultPrompt": ["Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."]
+      }
+    }
+  }
+}

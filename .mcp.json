@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "hydrovision": {
+      "type": "http",
+      "url": "https://simpat-mcp-prod-625238906243.us-central1.run.app/mcp",
+      "oauth": {"clientId": "claude-ai"}
+    }
+  }
+}

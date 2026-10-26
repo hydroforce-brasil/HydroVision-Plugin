@@ -1,0 +1,21 @@
+{
+  "version": "1.1.0",
+  "endpoint": "https://simpat-mcp-prod-625238906243.us-central1.run.app/mcp",
+  "clients": {
+    "claude": {"manifest": ".claude-plugin/plugin.json", "mcp_config": ".mcp.json", "reference": "claude.md", "oauth_client_id": "claude-ai"},
+    "chatgpt": {"manifest": "plugin.json", "mcp_config": "mcp.json", "reference": "chatgpt.md", "oauth_client_id": "chatgpt"}
+  },
+  "skills": [
+    {"name": "hydrovision-analysis", "references": ["domain.md", "concepts.json", "tools.json", "workflows.md", "images.md", "client.md"]},
+    {"name": "hydrovision-diagnostics", "references": ["domain.md", "concepts.json", "tools.json", "diagnostics.md", "images.md", "client.md"]},
+    {"name": "hydrovision-visualizations", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "visualizations.md", "images.md", "client.md"]},
+    {"name": "hydrovision-reports", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "images.md", "reports.md", "report-profiles.json", "analysis-context.schema.json", "templates.json", "branding.md", "client.md"], "scripts": ["validate_delivery.py"], "assets": true}
+  ],
+  "templates": [
+    {"id": "institutional-document", "source_name": "Template - Documento.docx", "format": "docx", "purpose": ["management", "technical"], "variant": "institutional", "bundled": true},
+    {"id": "institutional-presentation-dark", "source_name": "Template - Apresentações.pptx", "format": "pptx", "purpose": ["management", "technical"], "variant": "dark", "bundled": true},
+    {"id": "institutional-presentation-light", "source_name": "Template - Apresentações (Tema Claro).pptx", "format": "pptx", "purpose": ["management", "technical"], "variant": "light", "bundled": true},
+    {"id": "presentation-example-1", "source_name": "Exemplo 1 - Apresentação.pptx", "format": "pptx", "purpose": ["design-reference"], "variant": "example", "bundled": false},
+    {"id": "presentation-example-2", "source_name": "Exemplo 2 - Apresentação.potx", "format": "potx", "purpose": ["design-reference"], "variant": "example", "bundled": false}
+  ]
+}

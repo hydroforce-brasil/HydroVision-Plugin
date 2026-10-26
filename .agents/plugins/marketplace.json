@@ -1,0 +1,12 @@
+{
+  "name": "hydrovision-local",
+  "interface": {"displayName": "HydroVision — desenvolvimento local"},
+  "plugins": [
+    {
+      "name": "hydrovision",
+      "source": {"source": "local", "path": "./"},
+      "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+      "category": "Productivity"
+    }
+  ]
+}

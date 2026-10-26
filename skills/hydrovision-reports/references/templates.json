@@ -1,0 +1,512 @@
+{
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "institutional-document",
+      "source_name": "Template - Documento.docx",
+      "format": "docx",
+      "purpose": [
+        "management",
+        "technical"
+      ],
+      "variant": "institutional",
+      "bundled": true,
+      "sha256": "4df32dbdb39d7af06e511054de0527e127d499e4eb61b00c02300a8f6c0bf2a0",
+      "bytes": 915462,
+      "inspection": {
+        "themes": [
+          {
+            "part": "word/theme/theme1.xml",
+            "name": "Office Theme",
+            "colors": {
+              "dk1": "000000",
+              "lt1": "FFFFFF",
+              "dk2": "1F497D",
+              "lt2": "EEECE1",
+              "accent1": "4F81BD",
+              "accent2": "C0504D",
+              "accent3": "9BBB59",
+              "accent4": "8064A2",
+              "accent5": "4BACC6",
+              "accent6": "F79646",
+              "hlink": "0000FF",
+              "folHlink": "800080"
+            },
+            "fonts": {
+              "majorFont": "Calibri",
+              "minorFont": "Cambria"
+            }
+          }
+        ],
+        "media_count": 5,
+        "sections": [
+          {
+            "pgSz": {
+              "h": "16838",
+              "w": "11906",
+              "orient": "portrait"
+            },
+            "pgMar": {
+              "bottom": "1134",
+              "top": "1418",
+              "left": "1418",
+              "right": "1418",
+              "header": "708",
+              "footer": "708"
+            }
+          },
+          {
+            "pgSz": {
+              "h": "16838",
+              "w": "11906",
+              "orient": "portrait"
+            },
+            "pgMar": {
+              "bottom": "1134",
+              "top": "1418",
+              "left": "1418",
+              "right": "1418",
+              "header": "709",
+              "footer": "567"
+            }
+          }
+        ],
+        "styles": [
+          {
+            "id": "TableNormal",
+            "name": "TableNormal"
+          },
+          {
+            "id": "Normal",
+            "name": "normal"
+          },
+          {
+            "id": "Heading1",
+            "name": "heading 1"
+          },
+          {
+            "id": "Heading2",
+            "name": "heading 2"
+          },
+          {
+            "id": "Heading3",
+            "name": "heading 3"
+          },
+          {
+            "id": "Heading4",
+            "name": "heading 4"
+          },
+          {
+            "id": "Heading5",
+            "name": "heading 5"
+          },
+          {
+            "id": "Heading6",
+            "name": "heading 6"
+          },
+          {
+            "id": "Title",
+            "name": "Title"
+          },
+          {
+            "id": "Strong",
+            "name": "Strong"
+          },
+          {
+            "id": "ListParagraph",
+            "name": "List Paragraph"
+          },
+          {
+            "id": "Hyperlink",
+            "name": "Hyperlink"
+          },
+          {
+            "id": "FootnoteReference",
+            "name": "footnote reference"
+          },
+          {
+            "id": "FootnoteText",
+            "name": "footnote text"
+          },
+          {
+            "id": "FootnoteTextChar",
+            "name": "Footnote Text Char"
+          },
+          {
+            "id": "EndnoteReference",
+            "name": "endnote reference"
+          },
+          {
+            "id": "EndnoteText",
+            "name": "endnote text"
+          },
+          {
+            "id": "EndnoteTextChar",
+            "name": "Endnote Text Char"
+          },
+          {
+            "id": "SecaoSemNumero",
+            "name": "Seção sem número"
+          },
+          {
+            "id": "CapaRotulo",
+            "name": "Capa – Rótulo"
+          },
+          {
+            "id": "CapaTitulo",
+            "name": "Capa – Título"
+          },
+          {
+            "id": "CapaSubtitulo",
+            "name": "Capa – Subtítulo"
+          },
+          {
+            "id": "CapaMeta",
+            "name": "Capa – Meta"
+          },
+          {
+            "id": "Caption",
+            "name": "Caption"
+          },
+          {
+            "id": "LegendaTabela",
+            "name": "Legenda de tabela"
+          },
+          {
+            "id": "Quote",
+            "name": "Quote"
+          },
+          {
+            "id": "Nota",
+            "name": "Nota (quadro)"
+          },
+          {
+            "id": "TabelaCabecalho",
+            "name": "Tabela – Cabeçalho"
+          },
+          {
+            "id": "TabelaTexto",
+            "name": "Tabela – Texto"
+          },
+          {
+            "id": "CabecalhoDoc",
+            "name": "Cabeçalho do documento"
+          },
+          {
+            "id": "RodapeDoc",
+            "name": "Rodapé do documento"
+          },
+          {
+            "id": "Instrucao",
+            "name": "Instrução (excluir)"
+          },
+          {
+            "id": "Subtitle",
+            "name": "Subtitle"
+          }
+        ],
+        "explicit_fonts": [
+          "Georgia",
+          "Montserrat",
+          "Work Sans"
+        ],
+        "thumbnails": []
+      },
+      "asset": "assets/templates/institutional-document.docx"
+    },
+    {
+      "id": "institutional-presentation-dark",
+      "source_name": "Template - Apresentações.pptx",
+      "format": "pptx",
+      "purpose": [
+        "management",
+        "technical"
+      ],
+      "variant": "dark",
+      "bundled": true,
+      "sha256": "f4f94a48a77823c28a927616110e90055e290ba5672d37308bd0321bb1195d6c",
+      "bytes": 8796032,
+      "inspection": {
+        "themes": [
+          {
+            "part": "ppt/theme/theme1.xml",
+            "name": "Office Theme",
+            "colors": {
+              "dk1": "000000",
+              "lt1": "FFFFFF",
+              "dk2": "44546A",
+              "lt2": "E7E6E6",
+              "accent1": "4472C4",
+              "accent2": "ED7D31",
+              "accent3": "A5A5A5",
+              "accent4": "FFC000",
+              "accent5": "5B9BD5",
+              "accent6": "70AD47",
+              "hlink": "0563C1",
+              "folHlink": "954F72"
+            },
+            "fonts": {
+              "majorFont": "Montserrat",
+              "minorFont": "Work Sans"
+            }
+          }
+        ],
+        "media_count": 182,
+        "slide_size_emu": {
+          "cx": "12192000",
+          "cy": "6858000"
+        },
+        "slide_count": 22,
+        "layouts": [
+          {
+            "part": "ppt/slideLayouts/slideLayout1.xml",
+            "type": null,
+            "name": "DEFAULT"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout5.xml",
+            "type": null,
+            "name": "HF_CLARO"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout2.xml",
+            "type": null,
+            "name": "HF_CAPA"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout3.xml",
+            "type": null,
+            "name": "HF_ESCURO_GRID"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout4.xml",
+            "type": null,
+            "name": "HF_ESCURO"
+          }
+        ],
+        "thumbnails": []
+      },
+      "asset": "assets/templates/institutional-presentation-dark.pptx"
+    },
+    {
+      "id": "institutional-presentation-light",
+      "source_name": "Template - Apresentações (Tema Claro).pptx",
+      "format": "pptx",
+      "purpose": [
+        "management",
+        "technical"
+      ],
+      "variant": "light",
+      "bundled": true,
+      "sha256": "a56b3322d5387494065700ff74888905120b89ebaf6403eb0240c4c73e422c26",
+      "bytes": 4268541,
+      "inspection": {
+        "themes": [
+          {
+            "part": "ppt/theme/theme1.xml",
+            "name": "Hydroforce Claro",
+            "colors": {
+              "dk1": "28282D",
+              "lt1": "FFFFFF",
+              "dk2": "0B2336",
+              "lt2": "F2F0EB",
+              "accent1": "00539C",
+              "accent2": "3CADD4",
+              "accent3": "18576C",
+              "accent4": "9FB9C8",
+              "accent5": "D8E4EC",
+              "accent6": "5B6B75",
+              "hlink": "00539C",
+              "folHlink": "18576C"
+            },
+            "fonts": {
+              "majorFont": "Montserrat",
+              "minorFont": "Work Sans"
+            }
+          }
+        ],
+        "media_count": 146,
+        "slide_size_emu": {
+          "cx": "12192000",
+          "cy": "6858000"
+        },
+        "slide_count": 18,
+        "layouts": [
+          {
+            "part": "ppt/slideLayouts/slideLayout1.xml",
+            "type": null,
+            "name": "DEFAULT"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout2.xml",
+            "type": null,
+            "name": "HF_CAPA_CLARO"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout3.xml",
+            "type": null,
+            "name": "HF_CLARO_GRID"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout4.xml",
+            "type": null,
+            "name": "HF_CLARO"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout5.xml",
+            "type": null,
+            "name": "HF_CLARO_TOPO"
+          }
+        ],
+        "thumbnails": []
+      },
+      "asset": "assets/templates/institutional-presentation-light.pptx"
+    },
+    {
+      "id": "presentation-example-1",
+      "source_name": "Exemplo 1 - Apresentação.pptx",
+      "format": "pptx",
+      "purpose": [
+        "design-reference"
+      ],
+      "variant": "example",
+      "bundled": false,
+      "sha256": "ed6fd84b779e5e7835e5c8efc4aa41d27ba875d1c7f557738e7433f22719a75f",
+      "bytes": 18517975,
+      "inspection": {
+        "themes": [
+          {
+            "part": "ppt/theme/theme1.xml",
+            "name": "Office Theme",
+            "colors": {
+              "dk1": "000000",
+              "lt1": "FFFFFF",
+              "dk2": "44546A",
+              "lt2": "E7E6E6",
+              "accent1": "4472C4",
+              "accent2": "ED7D31",
+              "accent3": "A5A5A5",
+              "accent4": "FFC000",
+              "accent5": "5B9BD5",
+              "accent6": "70AD47",
+              "hlink": "0563C1",
+              "folHlink": "954F72"
+            },
+            "fonts": {
+              "majorFont": "Montserrat",
+              "minorFont": "Work Sans"
+            }
+          }
+        ],
+        "media_count": 278,
+        "slide_size_emu": {
+          "cx": "12192000",
+          "cy": "6858000"
+        },
+        "slide_count": 18,
+        "layouts": [
+          {
+            "part": "ppt/slideLayouts/slideLayout1.xml",
+            "type": null,
+            "name": "DEFAULT"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout2.xml",
+            "type": null,
+            "name": "HF_CAPA"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout3.xml",
+            "type": null,
+            "name": "HF_ESCURO_GRID"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout4.xml",
+            "type": null,
+            "name": "HF_ESCURO"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout5.xml",
+            "type": null,
+            "name": "HF_CLARO"
+          }
+        ],
+        "thumbnails": []
+      }
+    },
+    {
+      "id": "presentation-example-2",
+      "source_name": "Exemplo 2 - Apresentação.potx",
+      "format": "potx",
+      "purpose": [
+        "design-reference"
+      ],
+      "variant": "example",
+      "bundled": false,
+      "sha256": "023825797cb7db5b993bc59f598febec56b58945f3f84e0cb3b954e87dada873",
+      "bytes": 13535810,
+      "inspection": {
+        "themes": [
+          {
+            "part": "ppt/theme/theme1.xml",
+            "name": "Office Theme",
+            "colors": {
+              "dk1": "000000",
+              "lt1": "FFFFFF",
+              "dk2": "44546A",
+              "lt2": "E7E6E6",
+              "accent1": "4472C4",
+              "accent2": "ED7D31",
+              "accent3": "A5A5A5",
+              "accent4": "FFC000",
+              "accent5": "5B9BD5",
+              "accent6": "70AD47",
+              "hlink": "0563C1",
+              "folHlink": "954F72"
+            },
+            "fonts": {
+              "majorFont": "Montserrat",
+              "minorFont": "Work Sans"
+            }
+          }
+        ],
+        "media_count": 188,
+        "slide_size_emu": {
+          "cx": "12192000",
+          "cy": "6858000"
+        },
+        "slide_count": 17,
+        "layouts": [
+          {
+            "part": "ppt/slideLayouts/slideLayout1.xml",
+            "type": null,
+            "name": "DEFAULT"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout2.xml",
+            "type": null,
+            "name": "HF_CAPA"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout3.xml",
+            "type": null,
+            "name": "HF_ESCURO_GRID"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout4.xml",
+            "type": null,
+            "name": "HF_ESCURO"
+          },
+          {
+            "part": "ppt/slideLayouts/slideLayout5.xml",
+            "type": null,
+            "name": "HF_CLARO"
+          }
+        ],
+        "thumbnails": []
+      }
+    }
+  ],
+  "selection": "Explicit template_id first; one compatible bundled template can be selected; otherwise ask for variant.",
+  "example_policy": "Example decks are inspected as references and are not bundled or used as report content."
+}
