@@ -27,7 +27,10 @@
         "brandColor": "#00539C",
         "defaultPrompt": [
           "Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."
-        ]
+        ],
+        "websiteURL": "https://hydroforce.com.br/",
+        "privacyPolicyURL": "https://hydroforce.com.br/pt-BR/hydrovision/politica-de-privacidade",
+        "termsOfServiceURL": "https://hydroforce.com.br/pt-BR/hydrovision/termos-de-uso"
       },
       "review": {
         "prompts": [

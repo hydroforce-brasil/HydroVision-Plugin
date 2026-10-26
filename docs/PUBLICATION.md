@@ -44,19 +44,36 @@ O recorte Brasil é uma configuração de disponibilidade na publicação, não 
 implementação de bloqueio geográfico no servidor MCP. A ausência de pagamentos no
 plugin não altera nem declara condições comerciais de outros produtos Hydroforce.
 
-Obter e verificar estas quatro páginas públicas HTTPS, preenchendo os campos em
-`extensions.com.openai.interface` somente após confirmar seu conteúdo:
+Páginas fornecidas pelo mantenedor e verificadas em 26/10/2026, sem login.
+Os três links abaixo já constam em `extensions.com.openai.interface`:
 
-| Campo | Conteúdo necessário | Estado |
-|---|---|---|
-| `websiteURL` | Página que identifique HydroVision, finalidade e publicador. | Não informado/verificado. |
-| `supportURL` | Página com canal funcional de suporte. | Não informado/verificado. |
-| `privacyPolicyURL` | Política publicada que cubra os dados e práticas reais desta integração. | Não informado/verificado. |
-| `termsOfServiceURL` | Termos publicados aplicáveis ao plugin. | Não informado/verificado. |
+| Campo | URL / estado |
+|---|---|
+| `websiteURL` | https://hydroforce.com.br/ — identifica Hydroforce e descreve a plataforma HydroVision. |
+| `supportURL` | Pendente: criar/verificar uma página pública de suporte em HTTPS. Não usar apenas email ou `mailto:`. |
+| `privacyPolicyURL` | https://hydroforce.com.br/pt-BR/hydrovision/politica-de-privacidade — documento HydroVision acessível, com identidade e contato da Hydroforce. |
+| `termsOfServiceURL` | https://hydroforce.com.br/pt-BR/hydrovision/termos-de-uso — documento HydroVision acessível, com regras de contas e permissões. |
 
-Para preparar política/termos, confirmar coleta, uso, compartilhamento, retenção,
-exclusão, atendimento e condições de acesso reais. Não preencher URLs presumidas nem
-prometer práticas ainda não confirmadas. O link do repositório não substitui esses campos.
+As versões inglesas também foram abertas e identificadas como documentos HydroVision:
+
+- https://hydroforce.com.br/en/hydrovision/privacy-policy
+- https://hydroforce.com.br/en/hydrovision/terms-of-service
+
+A conferência verificou acesso público, identidade e conteúdo, não aprovação jurídica
+ou aprovação da OpenAI. As páginas atuais mencionam APIs e integrações genericamente;
+não foi encontrada explicação específica sobre ChatGPT/OpenAI ou o MCP. Antes da
+submissão, revisar a cobertura dessa integração com quem responde pelos textos:
+quais dados autorizados podem ser enviados ao ChatGPT, finalidade, contas/permissões,
+como desconectar/revogar acesso e as práticas reais de logs, retenção e exclusão.
+Não declarar essas práticas sem confirmá-las com a implementação e a equipe responsável.
+A página de apresentação também deve explicar o uso do HydroVision no ChatGPT.
+
+O endereço `contato@hydroforce.com.br` aparece nos documentos como contato público.
+Ainda é necessário confirmar se receberá suporte do plugin. Uma página simples no
+site existente pode conter esse canal, orientações para login/conexão, informações
+necessárias para relatar falhas e links dos documentos. Não precisa de um sistema de
+chamados separado. A proposta está em [SUPPORT-PAGE.md](SUPPORT-PAGE.md), ainda sem
+publicação nem `supportURL` no manifesto. Não foram prometidos horários ou prazos.
 
 O pacote ainda precisa do ícone oficial em PNG quadrado: logo com pelo menos 256×256
 e ícone do composer com pelo menos 48×48, até 5 MiB cada. Reutilizar a identidade
