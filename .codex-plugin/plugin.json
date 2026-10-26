@@ -1,0 +1,18 @@
+{
+  "name": "hydrovision",
+  "version": "0.1.0",
+  "description": "Consultas, análises operacionais, fotos e relatórios com os dados autorizados do HydroVision.",
+  "author": {
+    "name": "Hydroforce"
+  },
+  "skills": "./skills/",
+  "apps": "./.app.json",
+  "interface": {
+    "displayName": "HydroVision",
+    "shortDescription": "Consulte e analise seus dados do HydroVision",
+    "longDescription": "Use as ferramentas HydroVision com orientações para consultas, indicadores, comparações, fotos e relatórios. Requer uma conexão HydroVision autorizada.",
+    "developerName": "Hydroforce",
+    "category": "Productivity",
+    "capabilities": ["Read"]
+  }
+}

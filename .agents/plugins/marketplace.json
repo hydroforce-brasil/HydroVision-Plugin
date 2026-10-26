@@ -1,0 +1,15 @@
+{
+  "name": "hydrovision-plugins",
+  "interface": {
+    "displayName": "HydroVision"
+  },
+  "plugins": [
+    {
+      "name": "hydrovision",
+      "source": {
+        "source": "local",
+        "path": "./"
+      }
+    }
+  ]
+}
