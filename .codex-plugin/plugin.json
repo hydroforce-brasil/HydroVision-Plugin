@@ -1,7 +1,7 @@
 {
   "name": "hydrovision",
-  "version": "0.1.0",
-  "description": "Consultas, análises operacionais, fotos e relatórios com os dados autorizados do HydroVision.",
+  "version": "1.1.1",
+  "description": "Consultas HydroVision, diagnóstico, visualizações e documentos institucionais com imagens integradas.",
   "author": {
     "name": "Hydroforce"
   },
@@ -9,10 +9,19 @@
   "apps": "./.app.json",
   "interface": {
     "displayName": "HydroVision",
-    "shortDescription": "Consulte e analise seus dados do HydroVision",
-    "longDescription": "Use as ferramentas HydroVision com orientações para consultas, indicadores, comparações, fotos e relatórios. Requer uma conexão HydroVision autorizada.",
+    "shortDescription": "Análises de água e vazamentos",
+    "longDescription": "Consulte os dados autorizados do HydroVision, analise vazamentos e a saúde de loggers, compare períodos e produza gráficos e relatórios com modelos institucionais. Requer uma conta HydroVision autorizada. A conexão MCP é somente leitura; a criação de arquivos depende dos recursos disponíveis no cliente.",
     "developerName": "Hydroforce",
-    "category": "Productivity",
-    "capabilities": ["Read"]
+    "category": "Data & Analytics",
+    "capabilities": [
+      "Read"
+    ],
+    "brandColor": "#00539C",
+    "defaultPrompt": [
+      "Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."
+    ],
+    "websiteURL": "https://hydroforce.com.br/",
+    "privacyPolicyURL": "https://hydroforce.com.br/pt-BR/hydrovision/politica-de-privacidade",
+    "termsOfServiceURL": "https://hydroforce.com.br/pt-BR/hydrovision/termos-de-uso"
   }
 }

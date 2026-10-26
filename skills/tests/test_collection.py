@@ -4,6 +4,7 @@ import importlib.util
 import io
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -121,6 +122,11 @@ class CollectionTests(unittest.TestCase):
                             else:
                                 self.assertIn("plugin.json", archive.namelist())
                                 self.assertNotIn(".mcp.json", archive.namelist())
+                                self.assertNotIn(".app.json", archive.namelist())
+                                self.assertNotIn(".codex-plugin/plugin.json", archive.namelist())
+                                portable = json.loads(archive.read("plugin.json"))
+                                self.assertNotIn("apps", portable)
+                                self.assertNotIn("apps", portable["extensions"]["com.openai"])
                                 server = json.loads(archive.read("mcp.json"))["mcpServers"]["hydrovision"]
                                 self.assertEqual(server["extensions"]["com.openai"]["auth"]["client"]["clientId"], "chatgpt")
             for client in ("claude", "chatgpt"):
@@ -139,6 +145,54 @@ class CollectionTests(unittest.TestCase):
             self.assertTrue(plugin.is_relative_to(root))
             self.assertEqual(plugin, root / "chatgpt/hydrovision-plugin")
             collection.validate_client_configuration(plugin, "chatgpt")
+
+    def test_legacy_build_entrypoint_includes_the_complete_portable_plugin(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "release"
+            subprocess.run([sys.executable, str(collection.PLUGIN_ROOT / "build.py"),
+                            "--output-dir", str(output), "--target", "chatgpt"],
+                           check=True, capture_output=True, text=True)
+            archive_path = output / "hydrovision-chatgpt.zip"
+            self.assertEqual(collection.digest(archive_path),
+                             collection.digest(output / "chatgpt/hydrovision-plugin.zip"))
+            self.assertFalse((output / "hydrovision-claude.zip").exists())
+            with ZipFile(archive_path) as archive:
+                files = set(archive.namelist())
+                self.assertIn("plugin.json", files)
+                self.assertIn("mcp.json", files)
+                self.assertNotIn(".app.json", files)
+                for skill in collection.read_json(SKILLS / "collection.json")["skills"]:
+                    self.assertIn(f"skills/{skill['name']}/SKILL.md", files)
+                    for reference in skill["references"]:
+                        self.assertIn(f"skills/{skill['name']}/references/{reference}", files)
+                for item in collection.read_json(SKILLS / "_shared/templates.json")["items"]:
+                    if item["bundled"]:
+                        content = archive.read(f"skills/hydrovision-reports/{item['asset']}")
+                        self.assertEqual(hashlib.sha256(content).hexdigest(), item["sha256"])
+            original_hash = collection.digest(archive_path)
+            repeated = subprocess.run([sys.executable, str(collection.PLUGIN_ROOT / "build.py"),
+                                       "--output-dir", str(output), "--target", "chatgpt"],
+                                      capture_output=True, text=True)
+            self.assertNotEqual(repeated.returncode, 0)
+            self.assertEqual(collection.digest(archive_path), original_hash)
+
+    def test_overlong_listing_and_stale_compatibility_are_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copyfile(collection.PLUGIN_ROOT / "mcp.json", root / "mcp.json")
+            plugin = collection.read_json(collection.PLUGIN_ROOT / "plugin.json")
+            interface = plugin["extensions"]["com.openai"]["interface"]
+            interface["shortDescription"] = "x" * 31
+            collection.write_json(root / "plugin.json", plugin)
+            with self.assertRaisesRegex(ValueError, "shortDescription"):
+                collection.validate_client_configuration(root, "chatgpt")
+            interface["shortDescription"] = "Análises HydroVision"
+            collection.write_json(root / "plugin.json", plugin)
+            legacy = collection.read_json(collection.PLUGIN_ROOT / ".codex-plugin/plugin.json")
+            legacy["version"] = "0.1.0"
+            collection.write_json(root / ".codex-plugin/plugin.json", legacy)
+            with self.assertRaisesRegex(ValueError, "out of sync"):
+                collection.validate_client_configuration(root, "chatgpt")
 
     def test_public_client_authentication_cannot_cross_clients_or_embed_secrets(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,154 +1,114 @@
 # HydroVision Plugin
 
-Consulte dados, analise fotos e produza relatórios com o HydroVision no chat.
-Este pacote reúne a skill de análise e a configuração da conexão. As ferramentas
-continuam no servidor MCP e respeitam suas permissões no HydroVision.
+Consulte dados autorizados, investigue loggers e produza análises e relatórios do
+HydroVision no ChatGPT. O plugin reúne quatro skills, referências de domínio,
+modelos institucionais e a conexão com o servidor MCP existente. O acesso ao sistema
+usa OAuth e as permissões da conta HydroVision de cada pessoa.
 
-**A instalação depende do cliente:**
+**Estado: pacote de desenvolvimento; ainda não publicado no diretório do ChatGPT.**
+O build local não certifica autenticação de outros usuários nem aprovação pública.
+As pendências estão em [Preparar a publicação](docs/PUBLICATION.md).
 
-| Cliente | Como instalar este pacote |
+## O que está incluído
+
+| Skill | Uso |
 |---|---|
-| Claude.ai | Enviar `hydrovision-claude.zip` em **Customize → Plugins**. |
-| ChatGPT pessoal, desktop com Work/Codex | Instalar pelo catálogo local incluído no repositório. |
-| ChatGPT pessoal, navegador | Não há um fluxo equivalente de upload deste ZIP confirmado na documentação consultada. A conexão MCP já cadastrada continua funcionando. |
+| `hydrovision-analysis` | Consultas, comparações de períodos, vazamentos e exportações CSV. |
+| `hydrovision-diagnostics` | Saúde, bateria, desempenho e qualidade dos dados dos loggers. |
+| `hydrovision-visualizations` | Gráficos, mapas e tabelas com escopo, unidades e cobertura. |
+| `hydrovision-reports` | Relatórios com três modelos institucionais DOCX/PPTX, referências e validação de evidências. |
 
-O pacote não está publicado nos diretórios oficiais. O ZIP do ChatGPT é para instalação
-local; enviá-lo como anexo de uma conversa não instala o plugin.
+As ferramentas do MCP são somente leitura. A geração de DOCX, PDF, PPTX ou XLSX
+usa os recursos do cliente; o pacote não instala um executor Office nem garante
+que toda superfície consiga produzir ou renderizar esses formatos.
 
-## Obter os arquivos
+## Gerar o pacote completo
 
-Se recebeu o ZIP da equipe HydroVision, siga a instalação abaixo. Para gerá-los a partir
-deste repositório, use Python 3.10 ou superior, sem instalar dependências:
+Use Python 3.10 ou superior, sem dependências adicionais:
 
 ```bash
-python build.py
+python build.py --output-dir dist/1.1.1
 ```
 
-Os arquivos ficam em `dist/hydrovision-claude.zip` e `dist/hydrovision-chatgpt.zip`.
-O ZIP automático **Code → Download ZIP** do GitHub contém o projeto inteiro; use os
-pacotes gerados acima para instalar.
+O comando delega ao empacotador da coleção e mantém os nomes antigos de ZIP:
 
-## Claude.ai
+| Arquivo | Conteúdo |
+|---|---|
+| `dist/1.1.1/hydrovision-chatgpt.zip` | `plugin.json`, `mcp.json`, quatro skills, referências, scripts e modelos. |
+| `dist/1.1.1/hydrovision-claude.zip` | A mesma coleção, com configuração própria do Claude. |
+| `dist/1.1.1/chatgpt/hydrovision-plugin.zip` | Cópia idêntica do ZIP ChatGPT. |
+| `dist/1.1.1/manifest.json` | Inventário da entrega; os manifestos de cada cliente contêm hashes SHA-256. |
 
-1. Abra **Personalizar / Customize → Plugins → Adicionar / Add → Upload plugin**.
-2. Selecione `hydrovision-claude.zip`.
-3. Abra o plugin **HydroVision → Connectors**. Se a conexão já estiver ativa, use-a.
-   Caso contrário, adicione/conecte o servidor apresentado e faça login no HydroVision.
-4. Se o cadastro pedir configuração OAuth, escolha **Use your own OAuth client**:
-   Client ID `claude-ai`, Client Secret vazio e escopo `vision:read`, se solicitado.
-5. Abra uma conversa e peça uma consulta com o HydroVision.
+Para gerar apenas ChatGPT, acrescente `--target chatgpt`. Use uma pasta nova para
+cada build: entregas existentes não são sobrescritas. O comando canônico também
+continua disponível:
 
-O plugin inclui a URL do MCP e a skill. O cadastro/autorização do conector ainda é uma
-etapa da instalação; o pacote não substitui seu login. Em Team/Enterprise, o responsável
-pela organização pode precisar adicionar o conector primeiro. Mantenha sua conexão
-HydroVision existente enquanto testa o pacote.
+```bash
+python skills/collection.py build --output dist/release --target chatgpt
+```
 
-Esses passos seguem a documentação de [instalação de plugins no Claude](https://claude.com/docs/plugins/build)
-e [configuração OAuth dos conectores](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
+O ZIP de **Code → Download ZIP** do GitHub contém o repositório, não é o pacote
+final. Anexar um ZIP a uma conversa não instala um plugin.
 
-## ChatGPT pessoal — desktop
+## Instalar e compartilhar
 
-Este pacote usa o aplicativo HydroVision já cadastrado no ChatGPT, identificado em
-[.app.json](https://github.com/hydroforce-brasil/HydroVision-Plugin/blob/main/.app.json).
-Ele acrescenta a skill à conexão existente. **Mantenha essa conexão:**
-ela fornece as ferramentas e o login; o pacote local organiza seu uso.
+| Objetivo | Caminho |
+|---|---|
+| Testar localmente no desktop/Codex compatível | Registrar o marketplace do repositório ou do diretório de build e instalar HydroVision. |
+| Testar a conexão no ChatGPT | Adicionar o MCP remoto por uma superfície que suporte essa criação e autenticar no HydroVision. Isso, isoladamente, não instala as skills. |
+| Disponibilizar a um workspace | Importação/publicação gerenciada com as permissões do administrador. Essa disponibilidade fica dentro do workspace. |
+| Distribuir pelo diretório a outras contas pessoais | Preparar o pacote, materiais e conta de demonstração; passar por revisão e publicar no diretório universal. |
 
-1. No computador onde usa o ChatGPT desktop, mantenha este repositório ou extraia
-   `hydrovision-chatgpt.zip` em uma pasta permanente.
-2. Com uma versão do Codex CLI que tenha gerenciamento de plugins, registre essa pasta.
-   Exemplo para este checkout; ajuste o caminho se usar outra pasta:
+Consulte [Instalação ChatGPT](docs/INSTALL-CHATGPT.md) e
+[Instalação Claude](docs/INSTALL-CLAUDE.md). A fonte local chama-se
+`hydrovision-plugins`; a disponibilidade depende da versão e da superfície.
+O compartilhamento no workspace não torna o plugin acessível a contas pessoais
+externas. Um repositório público também não concede acesso aos dados do HydroVision.
 
-   ```bash
-   codex plugin marketplace add ~/work/HydroVision-Plugin
-   ```
-
-3. Reinicie o ChatGPT desktop. No modo **Work/Codex**, abra **Plugins**, escolha a origem
-   **HydroVision** e instale **HydroVision**.
-4. Confirme o acesso ao aplicativo HydroVision solicitado pelo pacote e faça login se necessário.
-5. Inicie uma conversa e selecione o plugin HydroVision dessa origem.
-
-Esse é o fluxo de [catálogo local documentado pela OpenAI](https://developers.openai.com/plugins/build/plugins).
-Ele depende de suporte a plugins locais na versão instalada. Não pressupõe que a instalação
-local aparecerá automaticamente no chat do navegador.
-
-O ID incluído é o da conexão informada pelo mantenedor. **Distribuir o ZIP não compartilha
-esse aplicativo com outras contas.** Para outro usuário, a conexão precisa estar disponível
-para ele; se cadastrar outro aplicativo, ajuste seu ID em `.app.json`. Compartilhar somente
-o pacote não elimina o cadastro manual do MCP para qualquer cliente externo.
-
-### Se usar apenas chatgpt.com
-
-Continue usando o HydroVision que já conectou. O MCP envia suas instruções gerais, mas
-isso não instala a skill deste repositório. Para experimentar a orientação nessa conversa,
-anexe [SKILL.md](skills/hydrovision-analysis/SKILL.md) e peça:
-
-> Use este guia nas consultas ao HydroVision nesta conversa.
-
-Isso é uma orientação por conversa, não a instalação do plugin. Para distribuir uma
-instalação no navegador, há caminhos distintos: importação pelo administrador em um
-workspace compatível ou publicação no diretório oficial. O segundo exige preparação e
-revisão próprias; este pacote privado, que referencia um aplicativo existente, não é um
-ZIP pronto para submissão pública.
-
-### Futuro workspace
-
-Depois de publicar os arquivos no GitHub, o administrador pode usar **Admin → Plugins →
-Add → Import marketplace**, com a URL deste repositório e Path vazio. O catálogo referencia
-o plugin da raiz. É preciso disponibilizar também o aplicativo de `.app.json` aos usuários;
-importar o pacote não concede esse acesso. Consulte a [documentação de distribuição no workspace](https://learn.chatgpt.com/docs/enterprise/plugin-management).
-
-## Cadastro manual da conexão, quando necessário
-
-**Nome:** `HydroVision` · **Autenticação:** `OAuth`
+## Conexão MCP
 
 ```text
 https://simpat-mcp-prod-625238906243.us-central1.run.app/mcp
 ```
 
-| Campo OAuth | Claude | ChatGPT |
-|---|---|---|
-| Client ID | `claude-ai` | `chatgpt` |
-| Client Secret | Deixe vazio | Deixe vazio |
-| Escopo, se solicitado | `vision:read` | `vision:read` |
+| Configuração ChatGPT | Valor |
+|---|---|
+| Transporte | Streamable HTTP |
+| Autenticação | OAuth |
+| Registro de cliente | `provided` |
+| Client ID | `chatgpt` |
+| Autenticação no token endpoint | `none` — sem Client Secret |
+| Escopo | `vision:read` |
 
-No ChatGPT, use **Plugins → + → Add custom MCP server**. Em OAuth avançado, escolha
-cliente previamente cadastrado, autenticação do cliente `none` e os valores acima.
-Confirme com a equipe HydroVision o cadastro da URL exata de callback exibida antes
-de conectar. Se a equipe fornecer outro Client ID, use o informado.
+O `mcp.json` preserva essa configuração. Endpoints OAuth vêm do discovery;
+o callback exato de cada conexão precisa estar registrado no servidor de contas.
+O Client ID é um identificador público, não uma credencial de acesso.
+Cada pessoa deve autenticar sua própria conta HydroVision e receber apenas os dados
+que o backend autoriza. Confirme isolamento entre empresas, expiração e revogação
+antes de liberar a terceiros; instruções em skills não substituem autorização no servidor.
 
-- `invalid_client`: confira o identificador e o cadastro no Accounts.
-- Erro de redirecionamento: envie à equipe somente o callback, sem parâmetros da tela de login.
-- Falha de login: confira a organização selecionada e suas permissões. Sua conta HydroVision
-  pode ser diferente da conta Claude/ChatGPT.
+A `.app.json` e o manifesto de compatibilidade `.codex-plugin/plugin.json` preservam
+a integração privada anterior para clientes que ainda a usam. O build portátil de
+ChatGPT exclui esses vínculos de aplicativo e usa o MCP remoto. Não distribua o
+repositório inteiro como ZIP de submissão pública.
 
-## Testar depois de instalar
+## Conferir e manter
 
-Primeiro, confira nas ferramentas do cliente que a skill `hydrovision-analysis` está disponível.
-Depois, use exemplos como estes, substituindo empresa, logger e período:
+```bash
+python skills/collection.py validate
+python -m unittest discover -s skills/tests -v
+```
 
-- “Use o HydroVision para listar as empresas que posso consultar.”
-- “Mostre as fotos de instalação do logger [ID] aqui no chat.”
-- “Gere os CSVs de vazamentos de [empresa], em [mês/ano], mostre uma prévia e anexe os arquivos.”
-- “Compare as confirmações de vazamentos entre [períodos] e explique a cobertura dos dados.”
+Os testes verificam empacotamento, integridade dos modelos, referências, isolamento
+de OAuth e validação de evidências. O aceite com login, fotos e documentos no cliente
+está em [ACCEPTANCE.md](docs/ACCEPTANCE.md). Os casos de revisão pública em
+`plugin.json` são rascunhos e precisam de conta de demonstração e execução.
 
-Confira o escopo, os totais e os arquivos com o sistema. Exibir imagens, executar cálculos
-e criar anexos depende dos recursos do cliente; a skill orienta seu uso, sem garantir uma
-capacidade ausente na interface.
+Use [MAINTENANCE.md](docs/MAINTENANCE.md) para atualizar fontes, versões e modelos.
+O servidor e as regras de acesso continuam sob responsabilidade dos projetos
+HydroVision/Accounts existentes. Não inclua tokens, senhas ou dados de clientes no pacote.
 
-## Manutenção
-
-- Edite a skill somente em `skills/hydrovision-analysis/SKILL.md`; os dois ZIPs recebem
-  exatamente esse arquivo.
-- A identidade e a versão ficam em `.codex-plugin/plugin.json`; `build.py` reaproveita esses
-  metadados para gerar o manifesto do Claude. Incremente a versão antes de distribuir uma atualização.
-- `build.py` contém a URL pública do MCP. `.app.json` referencia o aplicativo do ChatGPT.
-- O empacotamento inclui apenas arquivos explicitamente selecionados, sem `.git`, ambientes,
-  credenciais ou dados de clientes. Os ZIPs ficam fora do Git e podem ser distribuídos separadamente.
-- Mudanças na skill exigem atualizar/reinstalar o pacote no cliente. As tools e suas instruções
-  gerais continuam sendo mantidas e publicadas pelo `simpat-back`.
-
-Este repositório pode ser público: seus identificadores não concedem acesso aos dados.
-Não inclua senhas, tokens ou dados de clientes. Publicação nos diretórios oficiais é uma
-etapa futura, com requisitos próprios de distribuição, autenticação e revisão:
-[Claude](https://claude.com/docs/directory/publish) e
-[ChatGPT](https://developers.openai.com/plugins/deploy/submission).
+Fontes oficiais consultadas em 26/10/2026:
+[empacotamento](https://developers.openai.com/plugins/build/plugins),
+[autenticação](https://developers.openai.com/plugins/build/auth) e
+[submissão e publicação](https://developers.openai.com/plugins/deploy/submission).

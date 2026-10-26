@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "endpoint": "https://simpat-mcp-prod-625238906243.us-central1.run.app/mcp",
   "clients": {
     "claude": {"manifest": ".claude-plugin/plugin.json", "mcp_config": ".mcp.json", "reference": "claude.md", "oauth_client_id": "claude-ai"},

@@ -20,7 +20,7 @@ claude plugin validate .
 O último comando é opcional e valida somente a configuração Claude, exigindo seu CLI.
 As configurações ChatGPT portáteis são conferidas pelo empacotador e pelos testes de
 isolamento de OAuth/recursos. A descoberta local pode ser conferida com
-`codex plugin list --marketplace hydrovision-local --available --json` quando o CLI
+`codex plugin list --marketplace hydrovision-plugins --available --json` quando o CLI
 estiver disponível. Nenhuma dessas verificações certifica autenticação ou renderização.
 Avisos do perfil de submissão ao diretório público
 (licença, ícone e política de privacidade) não equivalem a falha de carregamento local;
@@ -64,11 +64,12 @@ das cores herdadas do tema Office. Não há renderer Office embutido no empacota
 
 ## Construir uma entrega
 
-Atualize a versão em `plugin.json`, `.claude-plugin/plugin.json` e `skills/collection.json`
-quando distribuir mudança. Use uma pasta nova, por exemplo `dist/1.1.0`, e execute:
+Atualize a versão em `plugin.json`, `.codex-plugin/plugin.json`,
+`.claude-plugin/plugin.json` e `skills/collection.json`
+quando distribuir mudança. Use uma pasta nova, por exemplo `dist/1.1.1`, e execute:
 
 ```powershell
-python skills/collection.py build --output dist/1.1.0
+python skills/collection.py build --output dist/1.1.1
 ```
 
 `build` valida fontes/cópias/modelos e produz as pastas `claude` e `chatgpt`, cada uma
@@ -88,3 +89,8 @@ Os testes de documento usam fixtures sintéticas para detectar imagem externa, m
 
 Depois do build, execute o aceite interativo em `ACCEPTANCE.md`. A estrutura local não
 comprova que o executor do Claude consiga materializar as imagens recebidas pelo MCP.
+
+O comando `python build.py --output-dir dist/NOVA-VERSAO` usa esse mesmo empacotador
+e acrescenta os nomes de ZIP históricos na raiz da entrega. Mantenha a apresentação
+do manifesto de compatibilidade sincronizada com o portátil. Para o diretório público,
+complete [PUBLICATION.md](PUBLICATION.md); o ZIP técnico ainda não é uma submissão pronta.

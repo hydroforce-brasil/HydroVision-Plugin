@@ -7,7 +7,7 @@ Claude como se fosse o pacote de configuração do ChatGPT.
 ## Teste local no ChatGPT Desktop
 
 O repositório já tem `.agents/plugins/marketplace.json`, com a fonte local
-`hydrovision-local` apontando para a raiz do plugin. Abra/trabalhe com este repositório
+`hydrovision-plugins` apontando para a raiz do plugin. Abra/trabalhe com este repositório
 no ChatGPT Desktop e consulte Plugins → fontes locais, reiniciando o aplicativo quando
 necessário. Instale HydroVision pela fonte local quando ela estiver disponível nessa
 superfície. O marketplace permite descobrir o pacote; não instala nem autentica sozinho.
@@ -21,7 +21,7 @@ Se já usa Codex CLI, estes comandos são alternativas de configuração local:
 
 ```text
 codex plugin marketplace add CAMINHO_ABSOLUTO_DO_REPOSITORIO_OU_BUILD
-codex plugin list --marketplace hydrovision-local --available --json
+codex plugin list --marketplace hydrovision-plugins --available --json
 ```
 
 O primeiro registra uma fonte na configuração pessoal; execute apenas se quiser essa
@@ -56,8 +56,9 @@ somente o servidor não instala automaticamente as quatro skills.
 Fontes locais servem para autoria/teste e não tornam o pacote automaticamente disponível
 no ChatGPT Web ou em outras contas. Para distribuição, use a fonte privada/gerenciada
 suportada pelo seu workspace ou o portal oficial de plugins, fluxo **With MCP**.
-No portal, envie o endpoint e as skills do pacote; a publicação exige autenticação,
-verificação e revisão. Não há publicação automática neste repositório.
+Antes do upload, complete o guia `docs/PUBLICATION.md` do pacote, incluindo cadastro,
+ícone, casos, conta de demonstração e gravação. O portal recebe o ZIP e usa a
+configuração MCP; a publicação exige autenticação, verificação e revisão. Não há publicação automática neste repositório.
 
 Não presuma uma opção genérica de upload de ZIP no chat. No fluxo do portal, o pacote
 portátil transporta configurações e recursos; a conexão e os testes continuam necessários.
