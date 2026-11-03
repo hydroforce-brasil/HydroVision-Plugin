@@ -29,6 +29,8 @@ TEXT_SUFFIXES = {".md", ".json", ".py"}
 MOJIBAKE = re.compile(r"[A-Za-zÀ-ÿ]\?[A-Za-zÀ-ÿ]|�|Ã[\u0080-¿]")
 # Codex marketplace entries need an install/auth policy and a category (developers.openai.com/plugins/build/plugins).
 CODEX_POLICY = {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}
+# Marketplace catalog shipped at the root of each plugin ZIP, pointing at the ZIP root ("./").
+ZIP_MARKETPLACES = {"claude": ".claude-plugin/marketplace.json", "chatgpt": ".agents/plugins/marketplace.json"}
 # Operator-only docs (bucket/IAM setup, CI secrets, maintenance); never shipped inside the end-user packages.
 OPERATOR_DOCS = ("RELEASE.md", "MAINTENANCE.md")
 NS = {
@@ -537,10 +539,12 @@ def build_client(output: Path, client: str, config, provenance):
                                      "bytes": archive_path.stat().st_size, "sha256": digest(archive_path)})
     plugin_folder = output / "hydrovision-plugin"
     plugin_folder.mkdir()
-    for key in ("manifest", "mcp_config"):
-        destination = plugin_folder / settings[key]
+    # The marketplace file makes the extracted ZIP installable as a local source:
+    # `codex plugin marketplace add <folder>` and `claude plugin marketplace add <folder>` need it.
+    for name in (settings["manifest"], settings["mcp_config"], ZIP_MARKETPLACES[client]):
+        destination = plugin_folder / name
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(PLUGIN_ROOT / settings[key], destination)
+        shutil.copyfile(PLUGIN_ROOT / name, destination)
     for spec in config["skills"]:
         shutil.copytree(output / spec["name"], plugin_folder / "skills" / spec["name"])
     install_guide = PLUGIN_ROOT / "docs" / f"INSTALL-{client.upper()}.md"

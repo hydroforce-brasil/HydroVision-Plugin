@@ -144,6 +144,18 @@ class CollectionTests(unittest.TestCase):
             self.assertEqual(plugin, root / "chatgpt/hydrovision-plugin")
             collection.validate_client_configuration(plugin, "chatgpt")
 
+    def test_extracted_zip_is_a_local_marketplace_for_its_client(self):
+        with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
+            root = Path(tmp) / "build"
+            collection.build(root)
+            clients = collection.read_json(SKILLS / "collection.json")["clients"]
+            for client, catalog in collection.ZIP_MARKETPLACES.items():
+                with ZipFile(root / client / "hydrovision-plugin.zip") as archive:
+                    self.assertIn(clients[client]["manifest"], archive.namelist())
+                    entry = json.loads(archive.read(catalog))["plugins"][0]
+                    source = entry["source"]["path"] if isinstance(entry["source"], dict) else entry["source"]
+                    self.assertEqual((entry["name"], source), ("hydrovision", "./"))
+
     def test_client_authentication_requires_cimd_without_client_ids_or_secrets(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
