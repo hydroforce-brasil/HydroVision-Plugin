@@ -1,8 +1,8 @@
 # Execução no ChatGPT
 
 Use a conexão HydroVision autenticada disponível na sessão, com os nomes reais das
-tools. O pacote portátil declara OAuth público com client ID `chatgpt`, sem secret,
-e escopo `vision:read`. Endpoints vêm de discovery. Callback precisa coincidir com o
+tools. O pacote portátil declara OAuth com registro de cliente CIMD (`client.mode = "cimd"`),
+sem client ID ou secret, e escopo `vision:read`. Endpoints vêm de discovery. Callback precisa coincidir com o
 cadastro real; não assuma que o callback de outro cliente seja válido. Não modifique
 o servidor ou permissões para contornar `invalid_client` ou acesso negado.
 

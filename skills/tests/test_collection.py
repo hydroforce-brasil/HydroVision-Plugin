@@ -113,16 +113,20 @@ class CollectionTests(unittest.TestCase):
                             self.assertEqual(archive.read(f"{skill}/references/concepts.json"), (SKILLS / "_shared/concepts.json").read_bytes())
                         else:
                             self.assertEqual(sum(name.endswith("/SKILL.md") for name in archive.namelist()), 4)
+                            for operator_doc in collection.OPERATOR_DOCS:
+                                self.assertNotIn(f"docs/{operator_doc}", archive.namelist())
+                            self.assertIn("docs/ACCEPTANCE.md", archive.namelist())
+                            self.assertIn(f"docs/INSTALL-{client.upper()}.md", archive.namelist())
                             if client == "claude":
                                 self.assertIn(".claude-plugin/plugin.json", archive.namelist())
                                 self.assertNotIn("plugin.json", archive.namelist())
                                 server = json.loads(archive.read(".mcp.json"))["mcpServers"]["hydrovision"]
-                                self.assertEqual(server["oauth"]["clientId"], "claude-ai")
+                                self.assertNotIn("oauth", server)  # CIMD: Claude uses its published identity
                             else:
                                 self.assertIn("plugin.json", archive.namelist())
                                 self.assertNotIn(".mcp.json", archive.namelist())
                                 server = json.loads(archive.read("mcp.json"))["mcpServers"]["hydrovision"]
-                                self.assertEqual(server["extensions"]["com.openai"]["auth"]["client"]["clientId"], "chatgpt")
+                                self.assertEqual(server["extensions"]["com.openai"]["auth"]["client"], {"mode": "cimd"})
             for client in ("claude", "chatgpt"):
                 report = root / "first" / client / "hydrovision-reports"
                 for item in collection.read_json(SKILLS / "_shared/templates.json")["items"]:
@@ -140,21 +144,125 @@ class CollectionTests(unittest.TestCase):
             self.assertEqual(plugin, root / "chatgpt/hydrovision-plugin")
             collection.validate_client_configuration(plugin, "chatgpt")
 
-    def test_public_client_authentication_cannot_cross_clients_or_embed_secrets(self):
+    def test_client_authentication_requires_cimd_without_client_ids_or_secrets(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             shutil.copyfile(collection.PLUGIN_ROOT / "plugin.json", root / "plugin.json")
             payload = collection.read_json(collection.PLUGIN_ROOT / "mcp.json")
             server = payload["mcpServers"]["hydrovision"]
-            server["extensions"]["com.openai"]["auth"]["client"]["clientId"] = "claude-ai"
             collection.write_json(root / "mcp.json", payload)
-            with self.assertRaisesRegex(ValueError, "ChatGPT public OAuth"):
+            collection.validate_client_configuration(root, "chatgpt")
+            server["extensions"]["com.openai"]["auth"]["client"] = {"mode": "provided", "clientId": "chatgpt", "tokenEndpointAuthMethod": "none"}
+            collection.write_json(root / "mcp.json", payload)
+            with self.assertRaisesRegex(ValueError, "ChatGPT OAuth"):
                 collection.validate_client_configuration(root, "chatgpt")
-            server["extensions"]["com.openai"]["auth"]["client"]["clientId"] = "chatgpt"
+            server["extensions"]["com.openai"]["auth"]["client"] = {"mode": "cimd"}
             server["headers"] = {"Authorization": "Bearer fake-test-fixture"}
             collection.write_json(root / "mcp.json", payload)
             with self.assertRaisesRegex(ValueError, "Credentials"):
                 collection.validate_client_configuration(root, "chatgpt")
+            shutil.copytree(collection.PLUGIN_ROOT / ".claude-plugin", root / ".claude-plugin")
+            claude = collection.read_json(collection.PLUGIN_ROOT / ".mcp.json")
+            collection.write_json(root / ".mcp.json", claude)
+            collection.validate_client_configuration(root, "claude")
+            claude["mcpServers"]["hydrovision"]["oauth"] = {"clientId": "claude-ai"}
+            collection.write_json(root / ".mcp.json", claude)
+            with self.assertRaisesRegex(ValueError, "CIMD needs no oauth"):
+                collection.validate_client_configuration(root, "claude")
+
+    def test_bump_and_check_version_cover_every_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            plugin = Path(tmp)
+            for name in collection.VERSION_FILES:
+                (plugin / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(collection.PLUGIN_ROOT / name, plugin / name)
+            with patch.object(collection, "PLUGIN_ROOT", plugin), redirect_stdout(io.StringIO()):
+                current = collection.check_version()
+                self.assertEqual(collection.check_version("v" + current), current)
+                with self.assertRaisesRegex(ValueError, "Expected version 0.0.1"):
+                    collection.check_version("v0.0.1")
+                with self.assertRaisesRegex(ValueError, "semantic version"):
+                    collection.bump("1.2")
+                before = {name: (plugin / name).read_text(encoding="utf-8") for name in collection.VERSION_FILES}
+                collection.bump("9.8.7")
+                self.assertEqual(collection.check_version("9.8.7"), "9.8.7")
+                for name in collection.VERSION_FILES:
+                    after = (plugin / name).read_text(encoding="utf-8")
+                    self.assertEqual(json.loads(after)["version"], "9.8.7")
+                    # Only the version line changes; formatting of inline objects is preserved.
+                    self.assertEqual(after.replace('"version": "9.8.7"', f'"version": "{current}"', 1), before[name])
+                stale = collection.read_json(plugin / "plugin.json")
+                stale["version"] = "0.1.0"
+                collection.write_json(plugin / "plugin.json", stale)
+                with self.assertRaisesRegex(ValueError, "Declared versions differ"):
+                    collection.check_version()
+
+    def test_stage_release_matches_private_bucket_contract(self):
+        with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
+            root = Path(tmp)
+            with patch.object(collection, "BACKEND", root / "missing-backend"):
+                collection.build(root / "build")
+            latest = collection.stage_release(root / "build", root / "release", published_at="2026-10-28T12:00:00Z")
+            version = collection.read_json(SKILLS / "collection.json")["version"]
+            self.assertEqual(list(latest), ["version", "published_at", "packages"])
+            self.assertEqual(latest["version"], version)
+            self.assertEqual(latest["published_at"], "2026-10-28T12:00:00Z")
+            self.assertEqual(list(latest["packages"]), ["claude", "chatgpt"])
+            prefix = root / "release" / collection.RELEASE_PREFIX
+            self.assertEqual(latest, collection.read_json(prefix / "latest.json"))
+            # The staged tree mirrors the bucket: every object path in latest.json exists under release/.
+            self.assertEqual(sorted(path.name for path in prefix.iterdir()), [version, "latest.json"])
+            self.assertEqual(sorted(path.name for path in (prefix / version).iterdir()),
+                             ["hydrovision-chatgpt.zip", "hydrovision-claude.zip", "manifest.json"])
+            build_manifest = collection.read_json(root / "build/manifest.json")
+            self.assertEqual(collection.read_json(prefix / version / "manifest.json"), build_manifest)
+            for client, package in latest["packages"].items():
+                self.assertEqual(list(package), ["object", "filename", "sha256", "size_bytes"])
+                self.assertEqual(package["object"], f"hydrovision-plugin/{version}/hydrovision-{client}.zip")
+                self.assertEqual(package["filename"], f"hydrovision-{client}-{version}.zip")
+                self.assertNotIn("http", json.dumps(package))
+                archive = root / "release" / package["object"]
+                self.assertEqual(package["sha256"], collection.digest(archive))
+                self.assertEqual(package["sha256"], build_manifest["targets"][client]["sha256"])
+                self.assertEqual(package["size_bytes"], archive.stat().st_size)
+            with self.assertRaisesRegex(ValueError, "not empty"):
+                collection.stage_release(root / "build", root / "release")
+
+    def test_lost_accents_and_non_utf8_are_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skills/hydrovision-analysis"
+            skill.mkdir(parents=True)
+            good = ["---", "name: x", "description: usuários e investigações", "---", "`a?b` e https://x.test/?q=1", ""]
+            (skill / "SKILL.md").write_text("\n".join(good), encoding="utf-8")
+            collection.validate_text_encoding(root)
+            lost = ["---", "name: x", "description: usu?rios e investiga??es", "---", ""]
+            (skill / "SKILL.md").write_text("\n".join(lost), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Lost accent"):
+                collection.validate_text_encoding(root)
+            (skill / "SKILL.md").write_text("descrição".encode("utf-8").decode("latin-1"), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "mojibake"):
+                collection.validate_text_encoding(root)
+            (skill / "SKILL.md").write_bytes("descrição".encode("cp1252"))
+            with self.assertRaisesRegex(ValueError, "Not UTF-8"):
+                collection.validate_text_encoding(root)
+
+    def test_marketplaces_and_no_ignored_codex_overlay(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in (".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"):
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(collection.PLUGIN_ROOT / name, root / name)
+            collection.validate_marketplaces(root)
+            (root / ".app.json").write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "ignored next to plugin.json"):
+                collection.validate_marketplaces(root)
+            (root / ".app.json").unlink()
+            codex = collection.read_json(root / ".agents/plugins/marketplace.json")
+            del codex["plugins"][0]["policy"]
+            collection.write_json(root / ".agents/plugins/marketplace.json", codex)
+            with self.assertRaisesRegex(ValueError, "needs policy"):
+                collection.validate_marketplaces(root)
 
     def test_stale_reference_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

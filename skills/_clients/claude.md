@@ -1,8 +1,8 @@
 # Execução no Claude
 
-Use a conexão HydroVision autenticada e os nomes reais das tools. O cliente OAuth
-configurado neste pacote é `claude-ai`, público e sem secret; escopo `vision:read`.
-Não reutilize credenciais ou configuração de outro cliente. Erros de callback ou
+Use a conexão HydroVision autenticada e os nomes reais das tools. A autenticação é OAuth
+por CIMD: o cliente apresenta sua identidade publicada, sem client ID ou secret no pacote;
+escopo `vision:read`. Não reutilize credenciais ou configuração de outro cliente. Erros de callback ou
 `invalid_client` precisam de conferência do cadastro pela equipe responsável.
 
 Para DOCX, PPTX, XLSX e PDF, utilize as capacidades de documentos e execução de código
