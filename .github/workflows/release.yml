@@ -1,0 +1,111 @@
+name: Release HydroVision plugin
+# Runs on every push to main. When the declared version (skills/collection.json and manifests) has no
+# tag v<version> yet, it builds both packages, uploads them to the PRIVATE GCS bucket read by simpat-back,
+# tags the commit and creates a GitHub Release. Pushes that do not bump the version only validate.
+# simpat-back reads hydrovision-plugin/latest.json and returns short-lived signed URLs to users.
+# Third-party actions (anything outside actions/*) are pinned to a full commit SHA with the tag as a
+# trailing comment; bump both together (see docs/RELEASE.md).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: plugin-release
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      publish: ${{ steps.meta.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Resolve declared version and whether it is already released
+        id: meta
+        run: |
+          version="$(python skills/collection.py check-version | sed -n 's/^Version \([0-9.]*\) .*/\1/p')"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::v$version already released; bump the version to publish a new package."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  release:
+    needs: plan
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+      BUCKET: ${{ vars.PLUGIN_RELEASES_BUCKET }}
+      PREFIX: hydrovision-plugin
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Require release settings
+        env:
+          SA_KEY_SET: ${{ secrets.GCP_PLUGIN_RELEASES_SA_KEY != '' }}
+        run: |
+          if [ -z "$BUCKET" ] || [ "$SA_KEY_SET" != "true" ]; then
+            echo "Set variable PLUGIN_RELEASES_BUCKET and secret GCP_PLUGIN_RELEASES_SA_KEY (docs/RELEASE.md)." >&2
+            exit 1
+          fi
+      - run: python skills/collection.py check-version "v$VERSION"
+      - run: python skills/collection.py validate
+      - run: python -m unittest discover -s skills/tests -v
+      - name: Build both clients and stage the bucket layout
+        run: |
+          python skills/collection.py build --output "dist/$VERSION"
+          python skills/collection.py stage-release --build "dist/$VERSION" --output release
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          credentials_json: ${{ secrets.GCP_PLUGIN_RELEASES_SA_KEY }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+      - name: Upload versioned objects (never overwritten)
+        run: |
+          # --no-clobber keeps an existing version intact; a rerun after a partial failure only fills gaps.
+          gcloud storage cp --no-clobber --content-type=application/zip \
+            "release/$PREFIX/$VERSION/hydrovision-claude.zip" "release/$PREFIX/$VERSION/hydrovision-chatgpt.zip" \
+            "gs://$BUCKET/$PREFIX/$VERSION/"
+          gcloud storage cp --no-clobber --content-type=application/json \
+            "release/$PREFIX/$VERSION/manifest.json" "gs://$BUCKET/$PREFIX/$VERSION/"
+      - name: Verify uploaded zips match the build (SHA-256)
+        run: |
+          mkdir -p fetched
+          gcloud storage cp "gs://$BUCKET/$PREFIX/$VERSION/*.zip" fetched/
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          latest = json.loads(pathlib.Path(f"release/{os.environ['PREFIX']}/latest.json").read_text(encoding="utf-8"))
+          for client, package in latest["packages"].items():
+              data = pathlib.Path("fetched", pathlib.PurePosixPath(package["object"]).name).read_bytes()
+              assert hashlib.sha256(data).hexdigest() == package["sha256"], f"{client}: bucket object differs from build"
+              assert len(data) == package["size_bytes"], f"{client}: size differs"
+          print("Bucket objects match latest.json:", latest["version"])
+          PY
+      - name: Publish latest.json pointer (no-cache)
+        run: |
+          gcloud storage cp --cache-control=no-cache --content-type=application/json \
+            "release/$PREFIX/latest.json" "gs://$BUCKET/$PREFIX/latest.json"
+          gcloud storage cat "gs://$BUCKET/$PREFIX/latest.json" | cmp - "release/$PREFIX/latest.json"
+      - name: Tag and create GitHub Release with the two zips
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp "release/$PREFIX/$VERSION/hydrovision-claude.zip" "hydrovision-claude-$VERSION.zip"
+          cp "release/$PREFIX/$VERSION/hydrovision-chatgpt.zip" "hydrovision-chatgpt-$VERSION.zip"
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "HydroVision plugin $VERSION" \
+            --generate-notes \
+            "hydrovision-claude-$VERSION.zip" "hydrovision-chatgpt-$VERSION.zip" \
+            "release/$PREFIX/$VERSION/manifest.json" "release/$PREFIX/latest.json"

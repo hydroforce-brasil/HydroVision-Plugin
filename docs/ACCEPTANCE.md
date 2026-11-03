@@ -8,7 +8,7 @@ versão, data, pacote/hash, cenário, resultado e limitação observada. Não re
 |---|---|
 | Nome ambíguo | Resolver candidatos e pedir distinção antes de consultar o objeto errado. |
 | Instalação por cliente | Manifesto/transporte corretos e quatro skills com referências e modelos completos. |
-| OAuth por cliente | `claude-ai` no Claude; `chatgpt`/`provided`/`none`/`vision:read` no ChatGPT, com callback válido. |
+| OAuth por cliente | CIMD nos dois clientes: sem Client ID/Secret no pacote, escopo `vision:read`, identidade publicada do cliente aceita pelo Accounts e callback válido. |
 | Empresa omitida | Usar selecionada e declarar; não ampliar para todas as autorizadas. |
 | Outra empresa | Consultas analíticas usam IDs autorizados explícitos; tools REST mantêm seu escopo. |
 | Mais de uma página | Continuar com cursor e consulta iguais; total populacional por agregação. |

@@ -1,3 +1,5 @@
 /dist/
+/release/
+/tmp/
 __pycache__/
 *.pyc

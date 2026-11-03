@@ -9,9 +9,7 @@
           "auth": {
             "type": "oauth",
             "client": {
-              "mode": "provided",
-              "clientId": "chatgpt",
-              "tokenEndpointAuthMethod": "none"
+              "mode": "cimd"
             },
             "baseScopes": ["vision:read"]
           }

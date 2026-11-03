@@ -1,14 +1,16 @@
-# Manter, validar e empacotar
+# Manter, validar, empacotar e publicar
 
-A fonte da coleção é este repositório. Não é necessário alterar frontend, backend
-ou Accounts para distribuir as skills. `skills/_shared` guarda referências canônicas;
-as cópias em cada `skills/<nome>/references` e o script de relatórios são gerados e
-versionados para permitir carregar o plugin diretamente de um clone.
+A fonte da coleção é este repositório. `skills/<nome>/SKILL.md` e `skills/_shared`
+são a única fonte das skills: o build copia esses arquivos tal como estão, sem gerar
+texto. As cópias em `skills/<nome>/references` e o script de relatórios são
+materializados por `sync` e versionados para permitir carregar o plugin direto de um
+clone (marketplace). `dist/`, `release/` e `tmp/` são locais e ignorados pelo Git.
 
 ## Atualizar conteúdo
 
-Edite o `SKILL.md` correspondente, as referências em `skills/_shared`, os scripts
-canônicos em `skills/scripts` ou a configuração `skills/collection.json`. Em seguida:
+Edite o `SKILL.md` correspondente (descrição com até 200 caracteres, sem citar o nome
+de um cliente), as referências em `skills/_shared`, os scripts canônicos em
+`skills/scripts` ou a configuração `skills/collection.json`. Em seguida:
 
 ```powershell
 python skills/collection.py sync
@@ -18,15 +20,13 @@ claude plugin validate .
 ```
 
 O último comando é opcional e valida somente a configuração Claude, exigindo seu CLI.
-As configurações ChatGPT portáteis são conferidas pelo empacotador e pelos testes de
-isolamento de OAuth/recursos. A descoberta local pode ser conferida com
-`codex plugin list --marketplace hydrovision-local --available --json` quando o CLI
-estiver disponível. Nenhuma dessas verificações certifica autenticação ou renderização.
-Avisos do perfil de submissão ao diretório público
-(licença, ícone e política de privacidade) não equivalem a falha de carregamento local;
-uma futura publicação precisará resolver esses requisitos sem inventar direitos ou URLs.
+As configurações ChatGPT portáteis são conferidas pelo empacotador e pelos testes
+(CIMD sem `clientId`, sem credenciais, escopo `vision:read`). A descoberta local pode
+ser conferida com `codex plugin list --marketplace hydrovision-plugins --available --json`
+quando o CLI estiver disponível. Nenhuma dessas verificações certifica autenticação ou
+renderização.
 
-`sync` também atualiza o catálogo legível. As skills são autossuficientes: referências
+`sync` também atualiza `docs/CATALOG.md`. As skills são autossuficientes: referências
 relativas não escapam da pasta da skill nem dependem de outra skill instalada.
 
 ## Atualizar fontes de domínio
@@ -40,13 +40,8 @@ python skills/collection.py validate
 ```
 
 O refresh lê AST e arquivos para registrar revisões, hashes, tools e campos públicos,
-sem importar os apps. Não altera os três repositórios. Revise diferenças de semântica
-nos catálogos: o comando não inventa a documentação de uma tool nova. A validação
-compara nomes/fields com o código local quando disponível. Sem os clones, compara com
-o snapshot versionado em `skills/_shared/sources.json`, permitindo builds independentes.
-
-Os schemas expostos pela conexão no momento do uso continuam prevalecendo. Um snapshot
-de referência não prova que determinada versão esteja implantada no endpoint.
+sem importar os apps. Sem os clones, a validação compara com o snapshot em
+`skills/_shared/sources.json`, permitindo builds independentes (é o que a CI faz).
 
 ## Atualizar modelos
 
@@ -56,35 +51,53 @@ python skills/collection.py sync
 python skills/collection.py validate
 ```
 
-A pasta é somente origem de leitura. O import mantém o hash dos cinco arquivos, temas,
-fontes, dimensões e layouts. Só os três templates configurados como reutilizáveis são
-copiados para os assets de relatórios; não altera os originais nem empacota os exemplos.
-Revise a identidade em `branding.md` se modelos mudarem: cores explícitas podem diferir
-das cores herdadas do tema Office. Não há renderer Office embutido no empacotador.
+Só os três templates configurados como reutilizáveis são copiados para os assets de
+relatórios. Revise `branding.md` se modelos mudarem.
 
-## Construir uma entrega
+## Versão única
 
-Atualize a versão em `plugin.json`, `.claude-plugin/plugin.json` e `skills/collection.json`
-quando distribuir mudança. Use uma pasta nova, por exemplo `dist/1.1.0`, e execute:
+A versão vive em três arquivos que devem ser iguais: `.claude-plugin/plugin.json`,
+`plugin.json` e `skills/collection.json`. Não recrie `.codex-plugin/` nem `.app.json`:
+com `extensions.com.openai` no `plugin.json`, o ChatGPT/Codex ignora o overlay inteiro, e
+o `validate` recusa esses arquivos.
 
 ```powershell
-python skills/collection.py build --output dist/1.1.0
+python skills/collection.py bump 1.3.0        # reescreve os três
+python skills/collection.py check-version     # falha se divergirem
+python skills/collection.py check-version v1.3.0   # usado pela release: tag == versão
 ```
 
-`build` valida fontes/cópias/modelos e produz as pastas `claude` e `chatgpt`, cada uma
-com plugin, quatro skills independentes, guia e manifesto SHA-256. Use `--target` para
-gerar apenas um cliente. O ZIP Claude tem `.claude-plugin`; o ChatGPT tem `plugin.json`
-e `mcp.json` portáteis na raiz. Cada ZIP de skill
-tem uma única pasta com nome igual ao `name` do SKILL.md. Datas de ZIP são fixas,
-permitindo reproduzir hashes com fontes idênticas. Builds existentes não são apagados.
-Os artefatos em `dist` são locais e ignorados pelo Git; não há publicação automática.
+Registre a mudança em `CHANGELOG.md`.
 
-O teste de empacotamento constrói os dois clientes sem os repositórios vizinhos e
-verifica hashes reproduzíveis, raízes de ZIP, referências, modelos idênticos e isolamento
-das configurações OAuth. A fonte comum usa linguagem neutra; `skills/_clients` contém
-as instruções específicas copiadas como `references/client.md` em cada pacote.
-Os testes de documento usam fixtures sintéticas para detectar imagem externa, mídia
-órfã/ausente, legenda ausente, contexto inválido e corrupção dos CSVs originais.
+## Construir localmente
 
-Depois do build, execute o aceite interativo em `ACCEPTANCE.md`. A estrutura local não
-comprova que o executor do Claude consiga materializar as imagens recebidas pelo MCP.
+```powershell
+python skills/collection.py build --output dist/1.3.0
+```
+
+`build` valida fontes/cópias/modelos e produz `claude/` e `chatgpt/`, cada um com
+`hydrovision-plugin.zip`, quatro ZIPs de skill, guia e `manifest.json` com SHA-256.
+O `manifest.json` da raiz do build traz, por cliente, o SHA-256 e o tamanho do ZIP do
+plugin. O build seleciona arquivos explicitamente: manifesto, configuração MCP, as
+quatro skills, `docs/` e o guia de instalação; `dist/`, `tmp/`, `skills/tests`,
+`skills/_shared`, `skills/_clients` e `collection.py` nunca entram nos ZIPs.
+Datas de ZIP são fixas; fontes idênticas reproduzem os mesmos hashes.
+
+## Publicar uma release
+
+Fluxo: **bump → merge em main → release.yml → bucket privado → simpat-back assina a URL**.
+
+1. `bump`, `check-version`, `validate`, testes e `CHANGELOG.md`; commit, PR e merge em `main`.
+2. No push em `main`, `release.yml` vê que a tag `v1.3.0` não existe, valida, testa,
+   constrói, executa `stage-release` e envia a `gs://$PLUGIN_RELEASES_BUCKET/hydrovision-plugin/`:
+   `1.3.0/hydrovision-claude.zip`, `1.3.0/hydrovision-chatgpt.zip`, `1.3.0/manifest.json`
+   e o ponteiro `latest.json` (`Cache-Control: no-cache`). Depois cria a tag `v1.3.0` e a
+   GitHub Release com os ZIPs anexados. Push sem bump não publica.
+3. O simpat-back lê `latest.json` e devolve ao HydroVision uma URL assinada de curta
+   duração para o ZIP escolhido em **Conectar IA**.
+
+Nomes, permissões do bucket, segredo da service account e o contrato do `latest.json`
+estão em [RELEASE.md](RELEASE.md). `validate.yml` continua rodando em push/PR sem publicar.
+
+Depois de publicar, execute o aceite interativo em `ACCEPTANCE.md`. A estrutura local não
+comprova que o executor do cliente consiga materializar as imagens recebidas pelo MCP.

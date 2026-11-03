@@ -1,0 +1,18 @@
+{
+  "name": "hydrovision",
+  "owner": {"name": "Hydroforce"},
+  "metadata": {
+    "description": "Marketplace oficial do plugin HydroVision: consultas, diagnóstico, visualizações e relatórios com dados autorizados via MCP."
+  },
+  "plugins": [
+    {
+      "name": "hydrovision",
+      "source": "./",
+      "description": "Consultas, diagnóstico de loggers, visualizações e relatórios institucionais HydroVision no chat, com conexão MCP autenticada e modelos incorporados.",
+      "author": {"name": "Hydroforce"},
+      "homepage": "https://github.com/hydroforce-brasil/HydroVision-Plugin",
+      "category": "productivity",
+      "keywords": ["hydrovision", "water", "leaks", "telemetry", "reports"]
+    }
+  ]
+}

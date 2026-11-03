@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
@@ -18,6 +19,18 @@ PLUGIN_ROOT = ROOT.parent
 WORKSPACE = PLUGIN_ROOT.parent
 BACKEND = WORKSPACE / "simpat-back"
 ASSET_ROOT = ROOT / "hydrovision-reports"
+# Every file that declares the plugin version; `bump` rewrites them and `check-version` compares them.
+VERSION_FILES = (".claude-plugin/plugin.json", "plugin.json", "skills/collection.json")
+SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+RELEASE_PREFIX = "hydrovision-plugin"
+RELEASE_CLIENTS = ("claude", "chatgpt")
+# Text files shipped in the packages; checked for strict UTF-8 and lost accents ("usu?rios").
+TEXT_SUFFIXES = {".md", ".json", ".py"}
+MOJIBAKE = re.compile(r"[A-Za-zÀ-ÿ]\?[A-Za-zÀ-ÿ]|�|Ã[\u0080-¿]")
+# Codex marketplace entries need an install/auth policy and a category (developers.openai.com/plugins/build/plugins).
+CODEX_POLICY = {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}
+# Operator-only docs (bucket/IAM setup, CI secrets, maintenance); never shipped inside the end-user packages.
+OPERATOR_DOCS = ("RELEASE.md", "MAINTENANCE.md")
 NS = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -230,7 +243,60 @@ def validate_sources():
             path = ASSET_ROOT / template["asset"]
             if not path.is_file() or digest(path) != template["sha256"]:
                 raise ValueError(f"Template integrity check failed: {template['id']}")
+    validate_text_encoding()
+    validate_marketplaces()
     print(f"Validated {len(config['skills'])} skills, {len(concepts)} concepts, {len(names)} tools and template integrity.")
+
+
+def validate_text_encoding(root: Path | None = None):
+    """Reject files that are not strict UTF-8 or whose accents were replaced by '?' or mojibake."""
+    root = PLUGIN_ROOT if root is None else root
+    folders = [root / "skills", root / "docs"]
+    files = [path for folder in folders if folder.exists() for path in folder.rglob("*")
+             if path.is_file() and path.suffix in TEXT_SUFFIXES and "tests" not in path.relative_to(root).parts]
+    files += [root / name for name in ("README.md", "plugin.json", "mcp.json", ".mcp.json", ".claude-plugin/plugin.json",
+                                       ".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json")
+              if (root / name).exists()]
+    for path in files:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError as error:
+            raise ValueError(f"Not UTF-8: {path.relative_to(root)}") from error
+        # Only prose can lose accents; code, URLs and regexes legitimately contain "?" between letters.
+        if path.suffix == ".md":
+            prose = re.sub(r"```.*?```|`[^`\n]*`|https?://\S+", "", text, flags=re.S)
+        elif path.suffix == ".json":
+            prose = " ".join(value for value in json_strings(json.loads(text)) if not re.search(r"https?://|[\\^$]", value))
+        else:
+            continue
+        match = MOJIBAKE.search(prose)
+        if match:
+            raise ValueError(f"Lost accent or mojibake in {path.relative_to(root)}: {match.group(0)!r}")
+
+
+def json_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from json_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from json_strings(item)
+
+
+def validate_marketplaces(root: Path | None = None):
+    root = PLUGIN_ROOT if root is None else root
+    codex = read_json(root / ".agents/plugins/marketplace.json")
+    for entry in codex["plugins"]:
+        if entry.get("policy") != CODEX_POLICY or not entry.get("category"):
+            raise ValueError(f"Codex marketplace entry {entry.get('name')} needs policy {CODEX_POLICY} and a category.")
+    claude = read_json(root / ".claude-plugin/marketplace.json")
+    if [entry["name"] for entry in claude["plugins"]] != ["hydrovision"]:
+        raise ValueError("Claude marketplace must list exactly the hydrovision plugin.")
+    if (root / ".codex-plugin").exists() or (root / ".app.json").exists():
+        # plugin.json declares extensions.com.openai, which replaces the .codex-plugin overlay entirely.
+        raise ValueError(".codex-plugin/ and .app.json are ignored next to plugin.json; keep OpenAI settings in plugin.json.")
 
 
 def validate_client_configuration(folder: Path, client: str, config=None):
@@ -241,8 +307,9 @@ def validate_client_configuration(folder: Path, client: str, config=None):
     if plugin["name"] != "hydrovision" or plugin["version"] != config["version"] or server["url"] != config["endpoint"]:
         raise ValueError("Plugin metadata and collection endpoint/version differ.")
     if client == "claude":
-        if server["type"] != "http" or server.get("oauth") != {"clientId": settings["oauth_client_id"]}:
-            raise ValueError("Invalid Claude transport or OAuth client.")
+        # CIMD: Claude presents its published client identity; a static clientId must not be pinned.
+        if server["type"] != "http" or "oauth" in server:
+            raise ValueError("Invalid Claude transport or OAuth client; CIMD needs no oauth block.")
     else:
         if plugin.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json":
             raise ValueError("ChatGPT needs the portable plugin schema.")
@@ -250,13 +317,82 @@ def validate_client_configuration(folder: Path, client: str, config=None):
         if mcp.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json" or server["type"] != "streamable-http":
             raise ValueError("ChatGPT needs portable MCP Streamable HTTP configuration.")
         auth = server["extensions"]["com.openai"]["auth"]
-        if (auth.get("type") != "oauth" or auth.get("client") != {
-                "mode": "provided", "clientId": settings["oauth_client_id"], "tokenEndpointAuthMethod": "none"
-        } or auth.get("baseScopes") != ["vision:read"]):
-            raise ValueError("Invalid ChatGPT public OAuth client configuration.")
+        # CIMD mode per developers.openai.com/plugins/build/plugins: no clientId or credentials in the client object.
+        if (auth.get("type") != "oauth" or auth.get("client") != {"mode": "cimd"}
+                or auth.get("baseScopes") != ["vision:read"]):
+            raise ValueError("Invalid ChatGPT OAuth client configuration; use CIMD without clientId.")
     for payload in (plugin, server):
-        if re.search(r'"(?:clientSecret|access_token|refresh_token|Authorization)"\s*:', json.dumps(payload), re.I):
+        if re.search(r'"(?:clientSecret|client_secret|access_token|refresh_token|Authorization)"\s*:', json.dumps(payload), re.I):
             raise ValueError("Credentials must not be embedded in plugin configuration.")
+
+
+def declared_versions() -> dict[str, str]:
+    return {name: read_json(PLUGIN_ROOT / name)["version"] for name in VERSION_FILES}
+
+
+def check_version(expected: str | None = None) -> str:
+    """Fail when the manifests disagree or when a release tag (v1.2.0) names another version."""
+    found = declared_versions()
+    if len(set(found.values())) != 1:
+        raise ValueError("Declared versions differ: " + ", ".join(f"{name}={value}" for name, value in found.items()))
+    version = next(iter(found.values()))
+    if not SEMVER.match(version):
+        raise ValueError(f"Version is not x.y.z: {version}")
+    if expected is not None and expected.removeprefix("v") != version:
+        raise ValueError(f"Expected version {expected.removeprefix('v')} but the manifests declare {version}.")
+    print(f"Version {version} is declared consistently in {len(found)} files.")
+    return version
+
+
+def bump(version: str):
+    """Rewrite the top-level version of every manifest in place, preserving their formatting."""
+    if not SEMVER.match(version):
+        raise ValueError(f"Use a semantic version x.y.z, got: {version}")
+    for name in VERSION_FILES:
+        path = PLUGIN_ROOT / name
+        text, count = re.subn(r'^(  "version": ")[^"]*(")', rf"\g<1>{version}\g<2>",
+                              path.read_text(encoding="utf-8"), count=1, flags=re.M)
+        if count != 1 or json.loads(text)["version"] != version:
+            raise ValueError(f"Could not rewrite the top-level version in {name}")
+        path.write_text(text, encoding="utf-8", newline="\n")
+    print(f"Set version {version} in {len(VERSION_FILES)} files; run validate and update CHANGELOG.md.")
+
+
+def stage_release(build_dir: Path, output: Path, published_at: str | None = None) -> dict:
+    """Lay out the private bucket objects for one release and write latest.json (contract with simpat-back).
+
+    The bucket is private: latest.json names objects, not URLs. The backend reads it with its own
+    service account and returns a short-lived V4 signed URL for the requested package.
+    """
+    published_at = published_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", published_at):
+        raise ValueError("published_at must be UTC like 2026-10-28T12:00:00Z")
+    build_manifest = read_json(build_dir / "manifest.json")
+    version = build_manifest["version"]
+    if version != check_version():
+        raise ValueError(f"Build {version} does not match the declared version.")
+    output = output.resolve()
+    if output.exists() and any(output.iterdir()):
+        raise ValueError(f"Release output is not empty; choose a fresh directory: {output}")
+    target = output / RELEASE_PREFIX / version
+    target.mkdir(parents=True)
+    packages = {}
+    for client in RELEASE_CLIENTS:
+        entry = build_manifest["targets"].get(client)
+        if entry is None:
+            raise ValueError(f"Build has no {client} target; a release needs both clients.")
+        name = f"hydrovision-{client}.zip"
+        shutil.copyfile(build_dir / entry["plugin"], target / name)
+        sha256 = digest(target / name)
+        if sha256 != entry["sha256"]:
+            raise ValueError(f"Plugin archive differs from the build manifest: {client}")
+        packages[client] = {"object": f"{RELEASE_PREFIX}/{version}/{name}", "filename": f"hydrovision-{client}-{version}.zip",
+                            "sha256": sha256, "size_bytes": (target / name).stat().st_size}
+    shutil.copyfile(build_dir / "manifest.json", target / "manifest.json")
+    latest = {"version": version, "published_at": published_at, "packages": packages}
+    write_json(output / RELEASE_PREFIX / "latest.json", latest)
+    print(f"Staged {RELEASE_PREFIX}/{version}/ and {RELEASE_PREFIX}/latest.json in {output}")
+    return latest
 
 
 def sync():
@@ -357,11 +493,14 @@ def build(output: Path, target="all"):
         client_output = output / client
         client_output.mkdir()
         build_client(client_output, client, config, provenance)
-        manifest["targets"][client] = {"manifest": f"{client}/manifest.json", "plugin": f"{client}/hydrovision-plugin.zip"}
+        built = read_json(client_output / "manifest.json")
+        manifest["targets"][client] = {"manifest": f"{client}/manifest.json", "plugin": f"{client}/hydrovision-plugin.zip",
+                                       "bytes": built["plugin"]["bytes"], "sha256": built["plugin"]["sha256"],
+                                       "packages": built["packages"]}
     write_json(output / "manifest.json", manifest)
     guide = (ROOT / "INSTALL.md").read_text(encoding="utf-8").replace("](../docs/", "](docs/")
     (output / "INSTALL.md").write_text(guide, encoding="utf-8", newline="\n")
-    shutil.copytree(PLUGIN_ROOT / "docs", output / "docs")
+    shutil.copytree(PLUGIN_ROOT / "docs", output / "docs", ignore=shutil.ignore_patterns(*OPERATOR_DOCS))
     if "chatgpt" in clients:
         marketplace = read_json(PLUGIN_ROOT / ".agents/plugins/marketplace.json")
         marketplace["plugins"][0]["source"]["path"] = "./chatgpt/hydrovision-plugin"
@@ -406,7 +545,7 @@ def build_client(output: Path, client: str, config, provenance):
         shutil.copytree(output / spec["name"], plugin_folder / "skills" / spec["name"])
     install_guide = PLUGIN_ROOT / "docs" / f"INSTALL-{client.upper()}.md"
     shutil.copyfile(install_guide, plugin_folder / "INSTALL.md")
-    shutil.copytree(PLUGIN_ROOT / "docs", plugin_folder / "docs")
+    shutil.copytree(PLUGIN_ROOT / "docs", plugin_folder / "docs", ignore=shutil.ignore_patterns(*OPERATOR_DOCS))
     validate_client_configuration(plugin_folder, client, config)
     plugin_archive = output / "hydrovision-plugin.zip"
     zip_directory(plugin_folder, plugin_archive)
@@ -438,6 +577,14 @@ def main():
     builder = commands.add_parser("build")
     builder.add_argument("--output", type=Path, required=True)
     builder.add_argument("--target", choices=("all", "claude", "chatgpt"), default="all")
+    bumper = commands.add_parser("bump", help="Set the same version in every manifest, e.g. bump 1.2.0")
+    bumper.add_argument("version")
+    checker = commands.add_parser("check-version", help="Fail when manifests differ or do not match an expected tag")
+    checker.add_argument("expected", nargs="?", help="Expected version or tag, e.g. v1.2.0")
+    stager = commands.add_parser("stage-release", help="Copy a build into the bucket layout and write latest.json")
+    stager.add_argument("--build", type=Path, required=True, help="Directory produced by build --output")
+    stager.add_argument("--output", type=Path, required=True)
+    stager.add_argument("--published-at", help="UTC timestamp like 2026-10-28T12:00:00Z; default now")
     args = parser.parse_args()
     if args.command == "import-templates":
         import_templates(args.source)
@@ -447,6 +594,12 @@ def main():
         sync()
     elif args.command == "refresh-sources":
         refresh_sources()
+    elif args.command == "bump":
+        bump(args.version)
+    elif args.command == "check-version":
+        check_version(args.expected)
+    elif args.command == "stage-release":
+        stage_release(args.build, args.output, args.published_at)
     else:
         build(args.output, args.target)
 

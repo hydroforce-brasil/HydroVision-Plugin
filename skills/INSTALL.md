@@ -2,15 +2,17 @@
 
 O build gera versões separadas para Claude e ChatGPT, com a mesma base de skills,
 catálogos e modelos. Para ChatGPT, siga o [guia próprio](../docs/INSTALL-CHATGPT.md).
-O guia abaixo descreve a instalação Claude. Não reutilize o Client ID de um cliente no outro.
+O guia abaixo descreve a instalação Claude. A autenticação é OAuth por CIMD: nenhum Client ID
+ou Secret é informado; cada cliente apresenta sua própria identidade publicada.
 
 ## Plugin completo no Claude
 
-Use `claude/hydrovision-plugin.zip` em **Personalizar / Customize → Plugins**, na opção de
-upload de plugin personalizado disponível no seu cliente/workspace. O arquivo contém
+Instale pelo marketplace (**Customize → Plugins → Add marketplace** com
+`hydroforce-brasil/HydroVision-Plugin`, ou `claude plugin marketplace add hydroforce-brasil/HydroVision-Plugin`)
+ou envie `hydrovision-claude.zip` em **Personalizar / Customize → Plugins → Upload plugin**. O arquivo contém
 `.claude-plugin/plugin.json`, `.mcp.json` e as quatro skills com todos os seus recursos.
-A autenticação OAuth continua necessária; pacote e Client ID público não concedem acesso.
-Se o cliente solicitar dados OAuth, use `claude-ai`, sem Client Secret, escopo `vision:read`.
+A autenticação OAuth continua necessária; o pacote não concede acesso. Não informe Client ID
+nem Secret: mantenha o registro automático do cliente (CIMD); escopo `vision:read`.
 Em conflito de callback/cliente, siga o guia de conexão do repositório e peça à equipe
 para verificar o cadastro; não altere a autenticação do servidor para contornar o erro.
 

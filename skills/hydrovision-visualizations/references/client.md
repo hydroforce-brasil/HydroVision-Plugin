@@ -15,6 +15,6 @@ Não construa URLs a partir de URIs `hydrovision://` nem transforme URL assinada
 externa persistente. Fotos principais ficam junto aos achados; demais no apêndice visual
 ou galeria no chat. Se não houver bytes ou renderização, identifique a falha específica.
 
-Use OAuth pela conexão configurada. Client IDs são públicos e específicos de cada
-cliente; não substitua a autenticação por tokens fixos nem altere permissões ou seleção
-da empresa para contornar uma consulta. Prefixos das tools variam; descubra os nomes reais.
+Use OAuth pela conexão configurada. O cliente se identifica por CIMD (identidade
+publicada, sem client ID ou secret no pacote); não substitua a autenticação por tokens
+fixos nem altere permissões ou seleção da empresa para contornar uma consulta. Prefixos das tools variam; descubra os nomes reais.
