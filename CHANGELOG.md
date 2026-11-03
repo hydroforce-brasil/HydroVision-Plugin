@@ -5,6 +5,15 @@ Todas as mudanças relevantes deste repositório. Formato baseado em
 A versão declarada é única: `python skills/collection.py check-version` confere
 `.claude-plugin/plugin.json`, `plugin.json` e `skills/collection.json`.
 
+## [1.2.1] - 2026-11-03
+
+### Corrigido
+
+- Os ZIPs passam a levar o catálogo de marketplace na raiz (`.agents/plugins/marketplace.json`
+  no pacote ChatGPT/Codex, `.claude-plugin/marketplace.json` no do Claude). Antes,
+  `codex plugin marketplace add <pasta extraída>` falhava com "marketplace root does not
+  contain a supported manifest"; agora a pasta extraída é uma fonte local instalável.
+
 ## [1.2.0] - 2026-11-03
 
 ### Adicionado
@@ -55,6 +64,7 @@ A versão declarada é única: `python skills/collection.py check-version` confe
 
 - Primeira skill de análise e pacotes Claude/ChatGPT.
 
+[1.2.1]: https://github.com/hydroforce-brasil/HydroVision-Plugin/releases/tag/v1.2.1
 [1.2.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/releases/tag/v1.2.0
 [1.1.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/compare/602c50b...f076a82
 [1.0.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/commit/602c50b

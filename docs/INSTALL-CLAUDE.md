@@ -18,6 +18,9 @@ marketplace é `.claude-plugin/marketplace.json`; o plugin é a raiz do reposit�
 Baixe `hydrovision-claude.zip` na página **Conectar IA** do HydroVision (ou na GitHub
 Release da versão) e use **Customize → Plugins → Adicionar / Add → Upload plugin**.
 Confira o SHA-256 exibido na página se quiser validar o download.
+No Claude Code, extraia o ZIP numa pasta permanente e rode
+`claude plugin marketplace add <pasta>` e `claude plugin install hydrovision@hydrovision`:
+o ZIP traz `.claude-plugin/marketplace.json` apontando para a própria raiz.
 Se o seu workspace não oferecer upload de plugin, use o marketplace acima ou envie os
 quatro ZIPs individuais de skill em **Customize → Skills → Upload a skill** e conecte o
 MCP separadamente. Não instale ZIPs individuais e o plugin ao mesmo tempo.

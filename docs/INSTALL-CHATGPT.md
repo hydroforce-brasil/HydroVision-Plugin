@@ -19,10 +19,12 @@ e registre a fonte local:
 
 ```text
 codex plugin marketplace add CAMINHO_ABSOLUTO_DA_PASTA
-codex plugin list --marketplace hydrovision-plugins --available --json
+codex plugin add hydrovision@hydrovision-plugins
 ```
 
-Reinicie o aplicativo, abra **Plugins**, escolha a fonte **HydroVision** e instale.
+O ZIP traz `.agents/plugins/marketplace.json` na raiz, apontando para a própria pasta.
+No ChatGPT Desktop, depois do primeiro comando, reinicie o aplicativo, abra **Plugins**,
+escolha a fonte **HydroVision** e instale.
 Enviar o ZIP como anexo de uma conversa não instala o plugin. Para testar somente os
 artefatos de um build, use a raiz do build como marketplace: ela tem
 `.agents/plugins/marketplace.json` apontando para `./chatgpt/hydrovision-plugin`.
