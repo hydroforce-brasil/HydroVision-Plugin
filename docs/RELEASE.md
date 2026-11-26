@@ -85,18 +85,18 @@ configuração; nada é enviado.
 ## 3. Publicar uma versão
 
 ```powershell
-python skills/collection.py bump 1.2.1
+python skills/collection.py bump 1.3.0
 python skills/collection.py validate
 python -m unittest discover -s skills/tests -v
 # atualizar CHANGELOG.md, commitar, abrir PR e mesclar em main
 ```
 
-O merge em `main` publica `1.2.1`. Um push em `main` sem novo `bump` não publica. Para
+O merge em `main` publica `1.3.0`. Um push em `main` sem novo `bump` não publica. Para
 reproduzir localmente o que vai para o bucket:
 
 ```powershell
-python skills/collection.py build --output dist/1.2.1
-python skills/collection.py stage-release --build dist/1.2.1 --output release
+python skills/collection.py build --output dist/1.3.0
+python skills/collection.py stage-release --build dist/1.3.0 --output release
 ```
 
 A pasta `release/` fica com a mesma árvore do bucket. `release/` e `dist/` são ignorados
@@ -170,7 +170,7 @@ id-token: write` no job e `workload_identity_provider` + `service_account` no
 
 ## Reverter
 
-Publique uma versão nova (por exemplo `1.2.2`) em vez de apagar objetos. Se for
+Publique uma versão nova (por exemplo `1.3.1`) em vez de apagar objetos. Se for
 imprescindível voltar o ponteiro, gere o `latest.json` de um build anterior com
 `stage-release` e envie só esse objeto:
 `gcloud storage cp --cache-control=no-cache release/hydrovision-plugin/latest.json gs://hydrovision-plugin-releases/hydrovision-plugin/latest.json`.

@@ -5,7 +5,7 @@ Todas as mudanças relevantes deste repositório. Formato baseado em
 A versão declarada é única: `python skills/collection.py check-version` confere
 `.claude-plugin/plugin.json`, `plugin.json` e `skills/collection.json`.
 
-## [Não lançado]
+## [1.3.0] - 2026-11-26
 
 ### Adicionado
 
@@ -101,6 +101,7 @@ A versão declarada é única: `python skills/collection.py check-version` confe
 
 - Primeira skill de análise e pacotes Claude/ChatGPT.
 
+[1.3.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/releases/tag/v1.3.0
 [1.2.1]: https://github.com/hydroforce-brasil/HydroVision-Plugin/releases/tag/v1.2.1
 [1.2.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/releases/tag/v1.2.0
 [1.1.0]: https://github.com/hydroforce-brasil/HydroVision-Plugin/compare/602c50b...f076a82
