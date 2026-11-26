@@ -14,9 +14,17 @@ Consulte [domain.md](references/domain.md) e [concepts.json](references/concepts
 para nomes e métricas; [tools.json](references/tools.json) para recuperar os dados;
 [visualizations.md](references/visualizations.md) para escolher e preparar a representação.
 
-Confirme contexto com `get_context` e contratos com `describe_data`. Identifique período,
-empresa, unidade, cobertura e fonte. Não represente páginas incompletas como populações
-inteiras; não preencha lacunas como zero nem misture recortes entre blocos.
+Antes de buscar dados, defina a pergunta que a figura responde, a medida e o recorte.
+Uma série ou um ranking sai de uma agregação do servidor (`query_data` com
+`mode=aggregate` e `group_by`), não da soma de páginas de registros. Se o pedido for
+vago ("faz um gráfico dos vazamentos"), proponha uma figura e confirme em uma pergunta
+curta antes de consultar. Leia [statistics.md](references/statistics.md) para
+denominadores, cobertura e meses sem ocorrência.
+
+Confirme contexto com `get_context`; use `describe_data` para dúvidas de definição ou
+unidade. Identifique período, empresa, unidade, cobertura e fonte. Não represente
+páginas incompletas como populações inteiras; não preencha lacunas como zero nem
+misture recortes entre blocos.
 
 Renderize gráficos e mapas como figuras incorporáveis, acompanhadas de interpretação
 no chat e nos documentos. Use coordenadas/geometrias realmente retornadas; não desenhe

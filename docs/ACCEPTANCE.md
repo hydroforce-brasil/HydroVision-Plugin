@@ -9,6 +9,14 @@ versão, data, pacote/hash, cenário, resultado e limitação observada. Não re
 | Nome ambíguo | Resolver candidatos e pedir distinção antes de consultar o objeto errado. |
 | Instalação por cliente | Manifesto/transporte corretos e quatro skills com referências e modelos completos. |
 | OAuth por cliente | CIMD nos dois clientes: sem Client ID/Secret no pacote, escopo `vision:read`, identidade publicada do cliente aceita pelo Accounts e callback válido. |
+| Medida ambígua ("qual a média dos vazamentos?") | Uma pergunta curta com opções concretas antes de consultar dados; nenhuma execução de todas as leituras. |
+| Pergunta fechada de número ("quantos vazamentos em outubro?") | `get_context` no máximo uma vez e uma agregação; resposta com número, recorte, n e o que foi presumido. |
+| Média mensal | Total ÷ meses do período; mês sem ocorrência conta como zero; mês corrente parcial fora ou identificado. |
+| Vazão média | Métrica de média do servidor, só sobre casos com estimativa; cobertura informada; nulo não vira zero. |
+| Contagem por grupo fora de vazamentos ("loggers por setor") | Uma agregação com `metrics=[count]` e `group_by`, sem percorrer páginas; nome do setor vindo na própria resposta. |
+| Estado da frota ("quantos loggers offline?") | `logger_fleet_dashboard`: contagem sobre o total instalado, com percentual; aparelho em estoque fora da conta. |
+| Tempo de reparo | Média e mediana do servidor, com n; sem média de médias por setor. |
+| Contagem simples fora de vazamentos ("quantas investigações abertas?") | Filtro com `limit=1` e leitura de `page.total`, sem percorrer páginas. |
 | Empresa omitida | Usar selecionada e declarar; não ampliar para todas as autorizadas. |
 | Outra empresa | Consultas analíticas usam IDs autorizados explícitos; tools REST mantêm seu escopo. |
 | Mais de uma página | Continuar com cursor e consulta iguais; total populacional por agregação. |

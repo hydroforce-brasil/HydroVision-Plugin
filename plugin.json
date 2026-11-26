@@ -16,7 +16,7 @@
         "category": "Productivity",
         "capabilities": ["Read"],
         "brandColor": "#00539C",
-        "defaultPrompt": ["Use o HydroVision para analisar a empresa selecionada e apresentar os achados com imagens integradas."]
+        "defaultPrompt": ["No HydroVision, quantos vazamentos foram confirmados no mês passado, por setor?"]
       }
     }
   }

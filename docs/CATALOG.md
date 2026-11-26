@@ -82,7 +82,7 @@ As relações de projeção não autorizam juntar IDs do Accounts e do Vision po
 | `get_context` | Empresas autorizadas, selecionada e datasets. | authorized context | cursor |
 | `resolve_entities` | Resolver nomes, endereços, MACs, códigos e IDs. | current or explicit authorized company_ids per schema | cursor |
 | `describe_data` | Campos, filtros, métricas, unidades e limites reais. | public catalog | none |
-| `query_data` | Selecionar registros de oito datasets; agregar casos de vazamento. | explicit company_ids | cursor |
+| `query_data` | Selecionar e contar registros de oito datasets; agregar vazamentos (soma, média, mediana) e contar loggers e investigações por grupo. | explicit company_ids | cursor |
 | `leak_search` | Atalho de compatibilidade para query_data(leaks). | explicit company_ids | cursor |
 | `repair_backlog` | Estoque atual confirmado/impedido e cobertura da vazão estimada. | explicit company_ids | cursor |
 | `compare_metrics` | Comparar métricas de vazamentos em dois recortes explícitos. | company_ids in each cohort | none |

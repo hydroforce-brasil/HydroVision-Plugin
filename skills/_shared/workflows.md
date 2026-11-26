@@ -16,10 +16,14 @@ este guia orienta o trabalho, sem substituir as regras calculadas pelo backend.
 - Resolva nomes, MACs, endereços e códigos com `resolve_entities`. Se houver candidatos
   incompatíveis com a mesma descrição, peça a distinção necessária antes da consulta.
 - Para perguntas temporais, defina período, fuso e evento: confirmação, reparo, captura,
-  abertura etc. Converta datas relativas em datas explícitas. Pergunte quando a ambiguidade
-  mudar o resultado; aproveite informações já estabelecidas na conversa.
-- Use `describe_data` antes de construir uma consulta cujo contrato ainda não conhece.
-  Consulte campos, filtros, unidades e definições disponíveis; não invente SQL ou parâmetros.
+  abertura etc. Converta datas relativas em datas explícitas. Sem período informado, use
+  o estado atual para estoque e os últimos 12 meses completos para contagem de eventos,
+  médias e evolução, declarando a escolha. Aproveite o que já foi dito na conversa.
+- Pergunte quando a ambiguidade mudar a medida calculada (média de quê, taxa sobre qual
+  base); quando mudar só o recorte, presuma o padrão e declare. Uma pergunta, com opções
+  concretas, antes de consultar.
+- Use `describe_data` quando faltar definição, unidade ou limite que o schema da tool não
+  traga. Consulte campos, filtros e definições disponíveis; não invente SQL ou parâmetros.
 
 ## Escolher as ferramentas
 
@@ -30,7 +34,9 @@ processo lendo sua descrição e seu schema antes de chamar.
 | Necessidade | Caminho preferido |
 |---|---|
 | Selecionar cadastros ou registros | `query_data` com o dataset apropriado: empresas, setores, loggers, usuários, pontos, vazamentos, indicadores ou investigações. Peça só os campos necessários. |
-| Totais e agrupamentos de vazamentos | `query_data` com `mode=aggregate`; use métricas do backend para a população completa. |
+| Totais, médias e agrupamentos de vazamentos | `query_data` com `mode=aggregate`; use métricas do backend para a população completa. Denominadores e erros comuns em [statistics.md](statistics.md). |
+| Contar registros de qualquer dataset | `query_data` com os filtros e `limit=1`; a contagem exata é `page.total`, sem percorrer páginas. |
+| Loggers ou investigações por grupo | `query_data` com `mode=aggregate`, `metrics=[count]` e `group_by` (status, setor, modelo, firmware; em investigações, status, modo de criação e mês). |
 | Comparar períodos, setores ou empresas | `compare_metrics` para métricas de vazamentos; para outros dados, consulte recortes equivalentes e explicite o cálculo adicional. |
 | Priorizar reparos e investigar um caso | `repair_backlog` com critério explícito e `leak_detail` para aprofundar. Prioridade é uma recomendação, não uma ordem de serviço executada. |
 | Panorama gerencial ou de um setor | `dashboard_management`, `dashboard_volume_series` e `sector_summary`; confira o recorte de cada bloco antes de combinar números. |

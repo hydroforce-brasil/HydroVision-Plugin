@@ -23,6 +23,11 @@ Identifique eixos, unidade, fonte, escopo, base temporal e lacunas. Ordenação/
 ser explícitos. Se exibir top N, preserve total e cobertura calculados sobre a população
 correta. Não desenhe zero em amostra ausente ou use gráfico suave para inventar medições.
 
+Séries e rankings de vazamentos saem de `query_data` com `mode=aggregate` e `group_by`;
+veja [statistics.md](statistics.md). Em contagens agrupadas, o mês ou setor que não
+vem na resposta teve zero ocorrências e entra na série como zero. Em medições
+(telemetria, vazão estimada), ausência é lacuna e continua em branco.
+
 Mapas: GeoJSON usa longitude/latitude, e não a ordem inversa. Rejeite coordenadas inválidas;
 não substitua posição desconhecida por (0,0). Sem base cartográfica autorizada disponível,
 mostre coordenadas em diagrama geográfico identificado como tal. Não prometa malha viária.

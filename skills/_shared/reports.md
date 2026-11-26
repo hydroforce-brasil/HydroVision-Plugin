@@ -6,6 +6,8 @@ Escolha público em [report-profiles.json](report-profiles.json), consulte as to
 necessárias e mantenha contexto em [analysis-context.schema.json](analysis-context.schema.json).
 Cada indicador preserva seu próprio recorte; o contexto geral não substitui o recorte
 de um bloco que ignore período/geografia. Não recalcule regras que o backend já fornece.
+Totais, médias e séries vêm de agregações do servidor; [statistics.md](statistics.md)
+traz denominadores, cobertura e os erros comuns de cálculo.
 
 Use nomes/IDs resolvidos. Exemplos de perguntas: “Relatório gerencial da empresa selecionada
 para setembro”; “Diagnóstico técnico deste MAC com fotos”; “Apresentação dos resultados
@@ -20,7 +22,8 @@ outra empresa ou dados pessoais sem necessidade para o pedido.
 
 Abra uma cópia de `assets/templates/institutional-document.docx` com os recursos de
 edição disponíveis no cliente. Preserve capa, estilos, logos, cabeçalhos, rodapés e seções, adaptando
-os blocos do roteiro ao conteúdo. Atualize título, empresa, datas, autor conhecido,+controle de versão e sumário. Remova textos de instrução, campos não preenchidos e
+os blocos do roteiro ao conteúdo. Atualize título, empresa, datas, autor conhecido,
+controle de versão e sumário. Remova textos de instrução, campos não preenchidos e
 exemplos do modelo. Não invente aprovador, autor ou classificação diferente da existente.
 
 Mantenha tabelas/texto editáveis. Insira fotos e gráficos como imagens inline com
@@ -52,7 +55,8 @@ não são evidência incorporada e não devem sustentar um PDF de arquivo.
 
 Como não há XLSX institucional de origem, derive a identidade documentada em
 [branding.md](branding.md). Use abas Contexto, Indicadores, Dados e Evidências, criando
-abas de dados por entidade quando isso melhorar a leitura. Registre empresa, período,+evento, unidades, fórmulas adicionais, cobertura e atualização.
+abas de dados por entidade quando isso melhorar a leitura. Registre empresa, período,
+evento, unidades, fórmulas adicionais, cobertura e atualização.
 
 Mantenha IDs, MACs e códigos como texto quando necessário, preservando zeros à esquerda.
 Valores numéricos devem ser células numéricas, sem transformar desconhecidos em zero.

@@ -6,10 +6,10 @@
     "chatgpt": {"manifest": "plugin.json", "mcp_config": "mcp.json", "reference": "chatgpt.md"}
   },
   "skills": [
-    {"name": "hydrovision-analysis", "references": ["domain.md", "concepts.json", "tools.json", "workflows.md", "images.md", "client.md"]},
-    {"name": "hydrovision-diagnostics", "references": ["domain.md", "concepts.json", "tools.json", "diagnostics.md", "images.md", "client.md"]},
-    {"name": "hydrovision-visualizations", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "visualizations.md", "images.md", "client.md"]},
-    {"name": "hydrovision-reports", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "images.md", "reports.md", "report-profiles.json", "analysis-context.schema.json", "templates.json", "branding.md", "client.md"], "scripts": ["validate_delivery.py"], "assets": true}
+    {"name": "hydrovision-analysis", "references": ["domain.md", "concepts.json", "tools.json", "workflows.md", "statistics.md", "images.md", "client.md"]},
+    {"name": "hydrovision-diagnostics", "references": ["domain.md", "concepts.json", "tools.json", "diagnostics.md", "statistics.md", "images.md", "client.md"]},
+    {"name": "hydrovision-visualizations", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "visualizations.md", "statistics.md", "images.md", "client.md"]},
+    {"name": "hydrovision-reports", "references": ["domain.md", "concepts.json", "tools.json", "views.json", "images.md", "reports.md", "statistics.md", "report-profiles.json", "analysis-context.schema.json", "templates.json", "branding.md", "client.md"], "scripts": ["validate_delivery.py"], "assets": true}
   ],
   "templates": [
     {"id": "institutional-document", "source_name": "Template - Documento.docx", "format": "docx", "purpose": ["management", "technical"], "variant": "institutional", "bundled": true},

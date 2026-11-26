@@ -5,6 +5,43 @@ Todas as mudanças relevantes deste repositório. Formato baseado em
 A versão declarada é única: `python skills/collection.py check-version` confere
 `.claude-plugin/plugin.json`, `plugin.json` e `skills/collection.json`.
 
+## [Não lançado]
+
+### Adicionado
+
+- Pré-voo nas quatro skills: antes da primeira tool, fechar medida, população, recorte e
+  forma da resposta. Recorte faltando é presumido e declarado (empresa selecionada;
+  estado atual para estoque, últimos 12 meses completos para ritmo e evolução); medida
+  ambígua ("qual a média dos vazamentos?") vira uma pergunta curta com opções, em vez
+  da execução de todas as leituras.
+- Referência `statistics.md` nas quatro skills: métricas que o servidor agrega, como ler
+  `data.totals`, `data.rows`, `coverage` e `page.total`, denominadores de cada média,
+  erros comuns (média de médias, mediana de grupos, mês sem ocorrência, nulo e zero,
+  estoque e fluxo) e o que fazer quando não há agregação no servidor.
+- Cenários de aceite para pré-voo, médias e contagens em `docs/ACCEPTANCE.md`.
+
+### Alterado
+
+- `hydrovision-analysis`: tabela de pergunta para chamada única, limite de chamadas por
+  pergunta simples, `describe_data` deixa de ser passo de rotina, uma fonte por medida
+  e resposta com o número primeiro. Descrição da skill reescrita para ser acionada antes
+  das tools em perguntas de contagem, média, ranking e comparação.
+- Contagem de qualquer dataset por `limit=1` e `page.total`, documentada em
+  `tools.json`, `workflows.md` e `diagnostics.md`. Estado da frota instalada (offline,
+  bateria, saúde) vem de `logger_fleet_dashboard`, que já traz a base do percentual.
+
+- Textos alinhados às capacidades novas do servidor MCP (exigem o deploy correspondente do
+  simpat-back; há instrução de contorno para servidor anterior em `statistics.md`): métrica
+  `estimated_flow_mean_m3_per_day`, `sector_name` nos grupos por setor e
+  `mode=aggregate` com `count` e `group_by` em `loggers`, `logger_performance` e
+  `investigations`.
+- Prompt inicial do pacote ChatGPT (`plugin.json`) passa a ser uma pergunta fechada, no
+  lugar do pedido aberto de "analisar a empresa selecionada".
+
+### Corrigido
+
+- Cinco quebras de linha perdidas (`,+` no meio da frase) em `reports.md` e `branding.md`.
+
 ## [1.2.1] - 2026-11-03
 
 ### Corrigido

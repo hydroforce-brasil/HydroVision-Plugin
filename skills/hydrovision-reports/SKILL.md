@@ -12,6 +12,12 @@ Leia [client.md](references/client.md) para recursos, arquivos e imagens no ambi
 
 ## Preparar a entrega
 
+Um relatório custa dezenas de consultas; feche o pedido antes da primeira. Confirme em
+uma única mensagem o que faltar entre empresa, período, público (gerencial ou técnico),
+formato e variante do modelo, propondo um padrão para cada item. Com o pedido fechado,
+liste os indicadores que entram e obtenha cada um por agregação do servidor, conforme
+[statistics.md](references/statistics.md), em vez de somar páginas de registros.
+
 1. Confirme empresa e escopo com `get_context`; resolva objetos e leia contratos atuais.
    Consulte [domain.md](references/domain.md), [concepts.json](references/concepts.json)
    e [tools.json](references/tools.json) conforme necessário.

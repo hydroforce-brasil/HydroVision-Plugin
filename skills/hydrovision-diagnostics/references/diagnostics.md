@@ -6,6 +6,9 @@
 |---|---|
 | Panorama da frota | `logger_fleet_dashboard`; declarar status e escopo considerados. |
 | Aparelhos com problemas | `query_data(logger_performance)` com campos mínimos, filtros e paginação; conferir `snapshot_computed_at`. |
+| Quantos aparelhos em uma condição | `logger_fleet_dashboard` para a empresa selecionada: já traz offline, bateria baixa e demais sintomas sobre o total instalado. Para outra empresa, setor ou condição que o painel não cubra, `query_data(logger_performance)` com o filtro da condição (`offline`, `low_battery`, `stale_transmission`, `alert`), `status_ids` do status instalado (`Ativo`) e `limit=1`; a contagem é `page.total` e a base do percentual é a mesma consulta sem o filtro da condição. |
+| Aparelhos por status, setor, modelo ou firmware | `query_data(logger_performance)` com `mode=aggregate`, `metrics=[count]` e `group_by`; os filtros valem, então "offline por setor" é o filtro `offline` com `group_by=[sector_id]`. |
+| Média ou distribuição de um indicador da frota | `logger_fleet_dashboard` se já trouxer o agregado; senão, todas as páginas com os campos mínimos e cálculo por execução de código, informando n e nulos. Ver [statistics.md](statistics.md). |
 | Saúde de um logger | `logger_health`; separar testes do batch mais recente, áudio/pressão do último dia de transmissão e bateria. |
 | Queda de bateria | `logger_battery_curve`; preservar unidade/modelo e datas, sem extrapolar vida útil não calculada pela tool. |
 | Dado antigo | `data_freshness`; comparar captura, chegada, snapshot e atualização/tentativa de localização. |
